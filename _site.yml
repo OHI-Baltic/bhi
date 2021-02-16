@@ -3,26 +3,19 @@ navbar:
   type: inverse
   title: "BALTIC HEALTH INDEX"
   left:
-    - text: "Regions"
-      icon:  fas fa-map
-      href:  regions.html
-    - text: "Goals"
+    - text:  "Goals"
       icon:  fas fa-tachometer-alt
       href:  goals.html
-    - text: "Data Layers"
+    - text:  "Data Layers"
       icon:  fas fa-server
       href:  layers.html
-  right:
-    - text: "Who Are We"
-      href:  who_we_are.html
-      icon:  fa-user-friends
-    - text: "FAQ"
+    - text:  "FAQ"
       icon:  fa-question-circle-o
       href:  faq.html
     - text:  "GitHub"
       icon:  fa-github
-      href:  https://github.com/OHI-Science/bhi
-output_dir: "."
+      href:  https://github.com/OHI-Baltic
+output_dir:  "."
 output:
   html_document:
     theme: yeti
