@@ -8,6 +8,104 @@ library(git2r)
 
 ## Functions
 
+#' map scores to compare between two scores.csv tables for two specified years
+#'
+#' @param scores1 first scores table (dataframe) to use in comparison
+#' @param year1 year of data within first scores table to use
+#' @param scores2 second scores table
+#' @param year2 year within second scores table
+#' @param dim a string specifying one dimension to investigate
+#' @param goals a string or vector of strings specifying goal(s) to investigate
+#' @param sf_bhirgns sf object with BHI regions, for mapping
+#'
+#' @return score maps and a difference map side-by-side; one row per goal when multiple goals are specified
+map_comparison <- function(scores1, year1, scores2, year2, dim = "score", goals = "Index", sf_bhirgns){
+
+  require(dplyr)
+  require(ggplot2)
+  require(sf)
+
+  scores1_yrs <- unique(scores1$year)
+  scores2_yrs <- unique(scores2$year)
+
+  if(!(year1 %in% scores1_yrs & year2 %in% scores2_yrs)){
+    return("years to compare must be in respective score data")
+
+  } else {
+
+    g <- goals
+
+    join_scores <- full_join(
+      filter(scores1, dimension %in% dim, goal %in% g, year == year1),
+      filter(scores2, dimension %in% dim, goal %in% g, year == year2),
+      by = c("region_id", "dimension", "goal")
+    )
+
+    comparison_tab <- join_scores %>%
+      rename(
+        scores_1 = score.x, year1 = year.x,
+        scores_2 = score.y, year2 = year.y
+      ) %>%
+      select(scores_1, scores_2, bhi_id = region_id) %>%
+      mutate(scores_diff = scores_1 - scores_2) %>%
+      tidyr::pivot_longer(
+        cols = starts_with("scores"),
+        names_to = "metric",
+        values_to = "value"
+      ) %>%
+      mutate(metric = case_when(
+        metric == "scores_1" ~ "Scores from Dataframe 1",
+        metric == "scores_2" ~ "Scores from Dataframe 2",
+        metric == "scores_diff" ~ "Difference between Scores"
+      ))
+
+
+    if(object.size(sf_bhirgns) > 2.5E6){
+      sf_bhirgns <- rmapshaper::ms_simplify(sf_bhirgns)
+    }
+
+    ## make scores maps
+    scores_maps <- sf_bhirgns %>%
+      left_join(filter(comparison_tab, metric != "scores_diff"), by = "bhi_id") %>%
+      ggplot() +
+      geom_sf(
+        aes(fill = value),
+        color = "snow",
+        size = 0.1,
+        alpha = 0.7
+      ) +
+      scale_fill_viridis_c() +
+      facet_wrap(~metric, ncol = 2)
+
+
+    ## make scores diff maps
+    diff_maps <- sf_bhirgns %>%
+      left_join(filter(comparison_tab, metric == "scores_diff"), by = "bhi_id") %>%
+      ggplot() +
+      geom_sf(
+        aes(fill = value),
+        color = "dimgrey",
+        size = 0.1,
+        alpha = 0.7
+      ) +
+      scale_fill_gradient2(
+        low = "lightcoral",
+        mid = "thistle",
+        high = "royalblue"
+      ) +
+      facet_wrap(~metric, ncol = 1)
+
+
+    maps <- gridExtra::grid.arrange(
+      scores_maps, diff_maps,
+      ncol = 2,
+      widths = c(2.1, 1.1)
+    )
+
+    return(maps)
+  }
+}
+
 #' compare scores between two scores.csv tables for two specified years
 #'
 #' @param scores1 first scores table (dataframe) to use in comparison
@@ -21,24 +119,31 @@ library(git2r)
 
 compare_scores <- function(scores1, year1, scores2, year2, dim = "score", goals = "Index"){
 
-  scores1_yrs <- scores1$year %>% unique()
-  scores2_yrs <- scores2$year %>% unique()
+  require(dplyr)
+  require(ggplot2)
+
+  scores1_yrs <- unique(scores1$year)
+  scores2_yrs <- unique(scores2$year)
 
   if(!(year1 %in% scores1_yrs & year2 %in% scores2_yrs)){
     return("years to compare must be in respective score data")
+
   } else {
+
     g <- goals
 
-    comparison_tab <- dplyr::full_join(
-      dplyr::filter(scores1, dimension %in% dim, goal %in% g, year == year1),
-      dplyr::filter(scores2, dimension %in% dim, goal %in% g, year == year2),
+    join_scores <- full_join(
+      filter(scores1, dimension %in% dim, goal %in% g, year == year1),
+      filter(scores2, dimension %in% dim, goal %in% g, year == year2),
       by = c("region_id", "dimension", "goal")
-    ) %>%
-      dplyr::rename(
+    )
+
+    comparison_tab <- join_scores %>%
+      rename(
         scores1 = score.x, year1 = year.x,
         scores2 = score.y, year2 = year.y
       ) %>%
-      dplyr::mutate(
+      mutate(
         scores_diff = scores1 - scores2,
         yr_diff = ifelse(year1 - year2 > 0, year1 - year2, 1),
         yearly_diff = scores_diff/yr_diff
@@ -46,8 +151,8 @@ compare_scores <- function(scores1, year1, scores2, year2, dim = "score", goals 
 
     ## comparision summary table
     comparison_summary <- comparison_tab %>%
-      dplyr::group_by(goal, dimension) %>%
-      dplyr::summarise(
+      group_by(goal, dimension) %>%
+      summarise(
         mean_diff = mean(scores_diff, na.rm = TRUE),
         sd_diff = sd(scores_diff, na.rm = TRUE),
         number_na = sum(is.na(scores_diff)),
@@ -59,17 +164,24 @@ compare_scores <- function(scores1, year1, scores2, year2, dim = "score", goals 
     pal <- RColorBrewer::brewer.pal(6, "Set2")
     n_facet <- ceiling(length(goal)/3)
 
-    comparison_plot <- ggplot2::ggplot(data = comparison_tab %>% na.omit(), aes(scores1, scores2)) +
-      geom_point(aes(color = dimension, label = region_id), alpha = 0.5, size = 3) +
+    comparison_plot <- ggplot(data = na.omit(comparison_tab)) +
+      geom_point(
+        aes(scores1, scores2, color = dimension, label = region_id),
+        alpha = 0.5, size = 3
+      ) +
       scale_color_manual(values = pal) +
-      geom_abline(slope = 1, intercept = 0, color = "gray70") +
-
-      theme_bw() + theme(legend.position = c(0.9, 0.12)) +
+      geom_abline(
+        slope = 1,
+        intercept = 0,
+        color = "gray70"
+      ) +
+      theme_bw() +
+      theme(legend.position = c(0.9, 0.12)) +
       labs(
         x = sprintf("\n Scores for %s from Table 1", year1),
         y = sprintf("Scores for %s from Table 2 \n", year2)
       ) +
-      facet_wrap( ~goal, ncol = n_facet) # split up by (sub)goals
+      facet_wrap(~goal, ncol = n_facet) # split up by (sub)goals
 
     return(list(comparison_plot, comparison_summary, comparison_tab))
   }
