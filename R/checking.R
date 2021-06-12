@@ -66,21 +66,23 @@ map_comparison <- function(scores1, year1, scores2, year2, dim = "score", goals 
 
     ## make scores maps
     scores_maps <- sf_bhirgns %>%
-      left_join(filter(comparison_tab, metric != "scores_diff"), by = "bhi_id") %>%
+      left_join(filter(comparison_tab, !stringr::str_detect(metric, "Difference")), by = "bhi_id") %>%
       ggplot() +
       geom_sf(
         aes(fill = value),
-        color = "snow",
+        color = "grey",
         size = 0.1,
-        alpha = 0.7
+        alpha = 0.8
       ) +
-      scale_fill_viridis_c() +
-      facet_wrap(~metric, ncol = 2)
+      labs(fill = "Score") +
+      scale_fill_viridis_c(option = "plasma", direction = -1, na.value = "snow") +
+      facet_wrap(~metric, ncol = 2) +
+      theme_linedraw()
 
 
     ## make scores diff maps
     diff_maps <- sf_bhirgns %>%
-      left_join(filter(comparison_tab, metric == "scores_diff"), by = "bhi_id") %>%
+      left_join(filter(comparison_tab, stringr::str_detect(metric, "Difference")), by = "bhi_id") %>%
       ggplot() +
       geom_sf(
         aes(fill = value),
@@ -88,18 +90,21 @@ map_comparison <- function(scores1, year1, scores2, year2, dim = "score", goals 
         size = 0.1,
         alpha = 0.7
       ) +
+      labs(fill = "Difference") +
       scale_fill_gradient2(
-        low = "lightcoral",
-        mid = "thistle",
-        high = "royalblue"
+        low = "seagreen",
+        mid = "skyblue",
+        high = "royalblue",
+        na.value = "grey"
       ) +
-      facet_wrap(~metric, ncol = 1)
+      facet_wrap(~metric, ncol = 1) +
+      theme_linedraw()
 
 
     maps <- gridExtra::grid.arrange(
       scores_maps, diff_maps,
       ncol = 2,
-      widths = c(2.1, 1.1)
+      widths = c(2, 1.18)
     )
 
     return(maps)
