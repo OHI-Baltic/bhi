@@ -58,7 +58,7 @@ LIV <- function(layers){
     ) %>%
     ## max rgn:country employ in moving 5year window across all regions
     ## (max of region maximums)
-    filter(year > min())
+    # filter(year > min()) %>%
     group_by(year) %>%
     mutate(
       refpthigh = max(refpthigh, na.rm = TRUE),
