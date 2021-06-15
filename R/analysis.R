@@ -182,3 +182,83 @@ sim_elast_of_sub <- function(scorescsv, calcyear = 2014, elast_of_sub = c(0, 1),
 
   return(result)
 }
+
+
+#' map status and trend
+#'
+#' @param scores scores table (dataframe) to use in plots
+#' @param year1 year of data within first scores table to use
+#' @param scores2 second scores table
+#' @param year2 year within second scores table
+#' @param dim a string specifying one dimension to investigate
+#' @param goals a string or vector of strings specifying goal(s) to investigate
+#' @param sf_bhirgns sf object with BHI regions, for mapping
+#'
+#' @return score maps and a difference map side-by-side; one row per goal when multiple goals are specified
+map_status_trend <- function(scores, year, goal = "Index", sf_bhirgns){
+
+  require(dplyr)
+  require(ggplot2)
+  require(sf)
+
+  if(!year %in% unique(scores$year)){
+    return("year not found in given scores data")
+
+  } else {
+
+    g <- goals
+
+    if(object.size(sf_bhirgns) > 2.5E6){
+      sf_bhirgns <- rmapshaper::ms_simplify(sf_bhirgns)
+    }
+    plotdf <- scores %>%
+      filter(goal == g) %>%
+      rename(bhi_id = region_id) %>%
+      distinct(bhi_id, dimension, score) %>%
+      tidyr::pivot_wider(names_from = dimension, values_from = score)
+
+    plotsf <- sf_bhirgns %>%
+      left_join(plotdf, by = "bhi_id")
+
+    ## make scores maps
+    status_map <- ggplot(plotsf) +
+      geom_sf(
+        aes(fill = status),
+        color = "grey",
+        size = 0.1,
+        alpha = 0.8
+      ) +
+      labs(fill = "Score") +
+      scale_fill_gradientn(
+        colors = viridis::viridis_pal(option = "plasma", end = 0.9, direction = -1)(9),
+        limits = c(0, 100),
+        na.value = "snow"
+      ) +
+      theme_linedraw() +
+      theme(legend.position = c(0.1, 0.85))
+
+
+    ## trend map
+    trend_map <- ggplot(plotsf) +
+      geom_sf(
+        aes(fill = trend),
+        color = "dimgrey",
+        size = 0.1,
+        alpha = 0.4
+      ) +
+      labs(fill = "Trend") +
+      scale_fill_gradient2(
+        low = "maroon",
+        mid = "seashell",
+        high = "darkcyan",
+        na.value = "grey"
+      ) +
+      theme_linedraw() +
+      theme(legend.position = c(0.1, 0.85))
+
+
+    maps <- gridExtra::grid.arrange(status_map, trend_map, ncol = 2)
+
+    return(maps)
+  }
+}
