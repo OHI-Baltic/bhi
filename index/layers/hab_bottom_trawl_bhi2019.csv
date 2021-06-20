@@ -1,43 +1,51 @@
-region_id,pressure_score,year
-1,0,2019
-2,0,2019
-3,0.456,2019
-4,0.004,2019
-5,0,2019
-6,0,2019
-7,0,2019
-8,0,2019
-9,0,2019
-10,0,2019
-11,0,2019
-12,0,2019
-13,0,2019
-14,0,2019
-15,0,2019
-16,0,2019
-17,0,2019
-18,0,2019
-19,0,2019
-20,0,2019
-21,0,2019
-22,0,2019
-23,0,2019
-24,0,2019
-25,0,2019
-26,0,2019
-27,0,2019
-28,0,2019
-29,0,2019
-30,0,2019
-31,0,2019
-32,0,2019
-33,0,2019
-34,0,2019
-35,0,2019
-36,0,2019
-37,0,2019
-38,0,2019
-39,0,2019
-40,0,2019
-41,0,2019
-42,0,2019
+year,swept,bhi_id,subbasin,rgn_nam,pressure_score
+2016,NA,1,Kattegat,Sweden,0
+2016,NA,2,Kattegat,Denmark,0
+2016,0.004142711,3,Great Belt,Denmark,0.456
+2016,0.268191738,3,Great Belt,Denmark,0.456
+2016,0.033459482,3,Great Belt,Denmark,0.456
+2016,0.193168218,3,Great Belt,Denmark,0.456
+2016,0.638678671,3,Great Belt,Denmark,0.456
+2016,0.596468057,3,Great Belt,Denmark,0.456
+2016,0.547293711,3,Great Belt,Denmark,0.456
+2016,0.257969892,3,Great Belt,Denmark,0.456
+2016,0.110713377,3,Great Belt,Denmark,0.456
+2016,0.004142711,4,Great Belt,Germany,0.004
+2016,NA,5,The Sound,Sweden,0
+2016,NA,6,The Sound,Denmark,0
+2016,NA,7,Kiel Bay,Denmark,0
+2016,NA,8,Kiel Bay,Germany,0
+2016,NA,9,Bay of Mecklenburg,Denmark,0
+2016,NA,10,Bay of Mecklenburg,Germany,0
+2016,NA,11,Arkona Basin,Sweden,0
+2016,NA,12,Arkona Basin,Denmark,0
+2016,NA,13,Arkona Basin,Germany,0
+2016,NA,14,Bornholm Basin,Sweden,0
+2016,NA,15,Bornholm Basin,Denmark,0
+2016,NA,16,Bornholm Basin,Germany,0
+2016,NA,17,Bornholm Basin,Poland,0
+2016,NA,18,Gdansk Basin,Poland,0
+2016,NA,19,Gdansk Basin,Russia,0
+2016,NA,20,Eastern Gotland Basin,Sweden,0
+2016,NA,21,Eastern Gotland Basin,Poland,0
+2016,NA,22,Eastern Gotland Basin,Russia,0
+2016,NA,23,Eastern Gotland Basin,Lithuania,0
+2016,NA,24,Eastern Gotland Basin,Latvia,0
+2016,NA,25,Eastern Gotland Basin,Estonia,0
+2016,NA,26,Western Gotland Basin,Sweden,0
+2016,NA,27,Gulf of Riga,Latvia,0
+2016,NA,28,Gulf of Riga,Estonia,0
+2016,NA,29,Northern Baltic Proper,Sweden,0
+2016,NA,30,Northern Baltic Proper,Finland,0
+2016,NA,31,Northern Baltic Proper,Estonia,0
+2016,NA,32,Gulf of Finland,Finland,0
+2016,NA,33,Gulf of Finland,Russia,0
+2016,NA,34,Gulf of Finland,Estonia,0
+2016,NA,35,Aland Sea,Sweden,0
+2016,NA,36,Aland Sea,Finland,0
+2016,NA,37,Bothnian Sea,Sweden,0
+2016,NA,38,Bothnian Sea,Finland,0
+2016,NA,39,The Quark,Sweden,0
+2016,NA,40,The Quark,Finland,0
+2016,NA,41,Bothnian Bay,Sweden,0
+2016,NA,42,Bothnian Bay,Finland,0
