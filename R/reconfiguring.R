@@ -1,5 +1,4 @@
 ## Libraries
-source(here::here("R", "setup.R"))
 library(tools)
 library(tibble)
 
@@ -122,13 +121,15 @@ copy_lyrs_from_bhiprep <- function(dir_assess, copy_layers = list("all"), repo_l
       url <- sprintf("%s/%s", repo_loc, tmp)
       name_of_layer <- stringr::str_extract(tmp, "[a-z0-9_]+.csv$")
 
-      httr::GET(
-        url,
-        httr::write_disk(
-          sprintf("%s/layers/%s", dir_assess, name_of_layer),
-          overwrite = TRUE
+      if(!httr::http_error(url)){
+        httr::GET(
+          url,
+          httr::write_disk(
+            sprintf("%s/layers/%s", dir_assess, name_of_layer),
+            overwrite = TRUE
+          )
         )
-      )
+      }
     }
   }
 }
@@ -152,7 +153,7 @@ scenario_data_include <- function(scen_data_years, scenario_yrs, new_lyrs = "", 
   add_scen_rows <- scen_data_years %>%
     dplyr::select(layer_name) %>%
     unique() %>%
-    dplyr::mutate(scenario_year = list(new_scen_yrs),data_year = NA) %>%
+    dplyr::mutate(scenario_year = list(new_scen_yrs), data_year = NA) %>%
     tidyr::unnest(cols = c(scenario_year))
 
   ## rows for new layers with the given range of scenario years
