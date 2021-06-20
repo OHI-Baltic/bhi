@@ -7,14 +7,11 @@ ICO <- function(layers){
 
   scen_year <- layers$data$scenario_year
 
-  ico_subbasin_assessments <- AlignDataYears(layer_nm="sp_ico_assessments", layers_obj=layers) %>%
+  ico_subbasin_assessments <- ohicore::AlignDataYears(layer_nm="sp_ico_assessments", layers_obj=layers) %>%
     ## scenario year here is the assessment_year_red_list:
     ## because of infrequent iucn assessments, there will inevitably be a lag in iconic species status...
     rename(year = scenario_year)
 
-  # ico_subbasin_assessments <- read.csv(here::here("index", "layers", "sp_ico_assessments_bhi2021.csv")) %>%
-  #   rename(year = assessment_year_red_list) %>%
-  #   mutate(region_id = paste0("BHI-", stringr::str_pad(region_id, 3, "left", 0)))
 
 
   ## Create vulnerability lookup table ----
@@ -79,7 +76,10 @@ ICO <- function(layers){
     ## summarize status values across taxa by region, using geometric mean
     ## normalized by numbers of species in each species group
     group_by(region_id) %>%
-    summarize(status = 100*round(exp(weighted.mean(log(status_taxa_initial), nspp, na.rm = TRUE)), 2))
+    summarize(status = 100*round(exp(weighted.mean(log(status_taxa_initial), nspp, na.rm = TRUE)), 2)) %>%
+    dplyr::mutate(region_id = paste(
+      "BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"
+    ))
 
 
 

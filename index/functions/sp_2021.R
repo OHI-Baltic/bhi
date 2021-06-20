@@ -13,11 +13,12 @@ SP <- function(layers, scores){
       goal %in% c("ICO", "LSP"),
       dimension %in% c("status", "trend", "future", "score")
     ) %>%
-    group_by(region_id, dimension) %>%
-    summarize(score = mean(score, na.rm = TRUE)) %>%
-    mutate(goal = "SP") %>%
-    ungroup() %>%
-    dplyr::select(region_id, goal, dimension, score)
+    dplyr::group_by(region_id, dimension) %>%
+    dplyr::summarize(score = mean(score, na.rm = TRUE)) %>%
+    dplyr::mutate(goal = "SP") %>%
+    dplyr::ungroup() %>%
+    dplyr::select(region_id, goal, dimension, score) %>%
+    dplyr::mutate(score = ifelse(is.nan(score), NA, score))
 
   return(rbind(scores, sp_scores))
 
