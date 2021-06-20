@@ -10,13 +10,12 @@ LE <- function(layers, scores){
       goal %in% c("LIV", "ECO"),
       dimension %in% c("status", "trend", "future", "score")
     ) %>%
-    # reshape2::dcast(region_id + dimension ~ goal, value.var = "score") %>%
-    # mutate(score = rowMeans(cbind(ECO, LIV), na.rm = TRUE)) %>%
     dplyr::group_by(region_id, dimension) %>%
     dplyr::summarize(score = mean(score, na.rm = TRUE)) %>%
     dplyr::mutate(goal = "LE") %>%
     dplyr::ungroup() %>%
-    dplyr::select(region_id, goal, dimension, score)
+    dplyr::select(region_id, goal, dimension, score) %>%
+    dplyr::mutate(score = ifelse(region_id %in% c("BHI-019", "BHI-022", "BHI-030", "BHI-033"), NA, score))
 
   return(rbind(scores, le_scores))
 

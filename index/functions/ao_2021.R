@@ -10,37 +10,39 @@ AO <- function(layers){
 
   ## Status ----
 
-  ao_status <- AlignDataYears(layer_nm="ao_stock_status", layers_obj=layers) %>%
+  ao_status <- ohicore::AlignDataYears(layer_nm="ao_stock_status", layers_obj=layers) %>%
     dplyr::mutate(dimension = as.character(dimension)) %>%
     dplyr::filter(scenario_year == scen_year) %>%
-    dplyr::select(region_id = rgn_id, score, dimension) %>%
-    dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
-
-  # ao_status <- read.csv(here::here("index", "layers", "ao_stock_status_bhi2021.csv")) %>%
-  #   dplyr::mutate(dimension = as.character(dimension)) %>%
-  #   dplyr::select(region_id = bhi_id, score, dimension) %>%
-  #   dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
+    dplyr::mutate(region_id = paste(
+      "BHI", stringr::str_pad(bhi_id, 3, "left", 0), sep = "-"
+    )) %>%
+    dplyr::select(region_id, score)
 
 
   ## Trend ----
 
-  ao_trend <- AlignDataYears(layer_nm="ao_stock_slope", layers_obj=layers) %>%
+  ao_trend <- ohicore::AlignDataYears(layer_nm="ao_stock_slope", layers_obj=layers) %>%
     dplyr::mutate(dimension = as.character(dimension)) %>%
     dplyr::filter(scenario_year == scen_year) %>%
-    dplyr::select(region_id = rgn_id, score, dimension) %>%
-    dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
-
-  # ao_trend <- read.csv(here::here("index", "layers", "ao_stock_slope_bhi2021.csv")) %>%
-  #   dplyr::mutate(dimension = as.character(dimension)) %>%
-  #   dplyr::select(region_id = bhi_id, score, dimension) %>%
-  #   dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
+    dplyr::mutate(region_id = paste(
+      "BHI", stringr::str_pad(bhi_id, 3, "left", 0), sep = "-"
+    )) %>%
+    dplyr::select(region_id, score)
 
 
   ## Return artisial fishing opportunities status and trend scores ----
 
   ao_status_and_trend <- dplyr::bind_rows(
-    mutate(ao_status, goal = "AO"),
-    mutate(ao_trend, goal = "AO")
+    ao_status %>%
+      tidyr::complete(region_id = paste0(
+        "BHI-", stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
+      )) %>%
+      dplyr::mutate(dimension = "status", goal = "AO"),
+    ao_trend %>%
+      tidyr::complete(region_id = paste0(
+        "BHI-", stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
+      )) %>%
+      dplyr::mutate(dimension = "trend", goal = "AO")
   )
   scores <- select(ao_status_and_trend, region_id, goal, dimension, score)
 

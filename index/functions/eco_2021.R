@@ -8,13 +8,10 @@ ECO <- function(layers){
   scen_year <- layers$data$scenario_year
 
 
-  growth_rates <- AlignDataYears(layer_nm="le_eco_bluegrowth_rates", layers_obj=layers) %>%
+  growth_rates <- ohicore::AlignDataYears(layer_nm="le_eco_bluegrowth_rates", layers_obj=layers) %>%
     select(year = scenario_year, region_id, sector, annual_growth_rate)
-  gva <- AlignDataYears(layer_nm="le_eco_yearly_gva", layers_obj=layers) %>%
+  gva <- ohicore::AlignDataYears(layer_nm="le_eco_yearly_gva", layers_obj=layers) %>%
     select(year = scenario_year, region_id, sector, gva_sector_prop, country_blueecon_gva)
-
-  # growth_rates <- read.csv(here::here("index", "layers", "le_eco_bluegrowth_rates_bhi2021.csv"))
-  # gva <- read.csv(here::here("index", "layers", "le_eco_yearly_gva_bhi2021.csv"))
 
   eco_status <- full_join(growth_rates, gva, by = c("region_id", "sector", "year")) %>%
     ## try smoothing growth rate data first with 3-year rolling average
@@ -64,12 +61,20 @@ ECO <- function(layers){
     eco_status %>%
       dplyr::filter(year == scen_year) %>%
       dplyr::select(region_id, score = status) %>%
+      tidyr::complete(region_id = paste0(
+        "BHI-",
+        stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
+      )) %>%
       dplyr::mutate(dimension = "status", goal = "ECO"),
     ## trend scores
     eco_trend %>%
       dplyr::select(region_id, score = trend) %>%
+      tidyr::complete(region_id = paste0(
+        "BHI-",
+        stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
+      )) %>%
       dplyr::mutate(dimension = "trend", goal = "ECO")
-  )
+  ) %>% mutate(score = ifelse(region_id == "BHI-030", NA, score))
 
   return(scores)
 

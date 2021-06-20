@@ -9,13 +9,10 @@ LIV <- function(layers){
 
 
   ## liv data layers include regional (by BHI region) and national employment rates
-  regional_employ <- AlignDataYears(layer_nm="le_liv_regional_employ", layers_obj=layers) %>%
+  regional_employ <- ohicore::AlignDataYears(layer_nm="le_liv_regional_employ", layers_obj=layers) %>%
     select(year = scenario_year, bhi_employ_rate, region_id)
-  country_employ <- AlignDataYears(layer_nm="le_liv_national_employ", layers_obj=layers) %>%
+  country_employ <- ohicore::AlignDataYears(layer_nm="le_liv_national_employ", layers_obj=layers) %>%
     select(year = scenario_year, employ_pop, region_id)
-
-  # regional_employ <- read.csv(here::here("index", "layers", "le_liv_regional_employ_bhi2021.csv"))
-  # country_employ <- read.csv(here::here("index", "layers", "le_liv_national_employ_bhi2021.csv"))
 
   liv_data <- full_join(regional_employ, country_employ, by = c("region_id", "year")) %>%
     mutate(bhi_employ_rate = bhi_employ_rate*100) %>%

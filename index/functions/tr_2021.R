@@ -11,11 +11,24 @@ TR <- function(layers){
   scen_year <- layers$data$scenario_year
 
 
-  tr_accomm <- AlignDataYears(layer_nm="tr_accommodations", layers_obj=layers) %>%
-    select(year = scenario_year, region_id, accom_per_area)
+  tr_accomm <- ohicore::AlignDataYears(layer_nm="tr_accommodations", layers_obj=layers) %>%
+    dplyr::select(year = scenario_year, region_id, accom_per_area)
+  ## remove region 4 (avg accom already same across regions 4 and 8)
+  ## assign same accommodations per area for regions 36 and 43, for this assessment...
+  tr_accomm <- tr_accomm %>%
+    dplyr::filter(region_id == 36) %>%
+    dplyr::mutate(region_id = 43) %>%
+    dplyr::bind_rows(filter(tr_accomm, region_id != 4))
 
-  tr_gva <- AlignDataYears(layer_nm="tr_coastal_tourism_gva", layers_obj=layers) %>%
-    select(year = scenario_year, region_id, cntry_tourism_gva)
+
+  tr_gva <- ohicore::AlignDataYears(layer_nm="tr_coastal_tourism_gva", layers_obj=layers) %>%
+    dplyr::select(year = scenario_year, region_id, cntry_tourism_gva)
+  ## country tourism gva same for regions 36 and 43, just filter to remove region 4
+  tr_gva <- tr_gva %>%
+    dplyr::filter(region_id == 36) %>%
+    dplyr::mutate(region_id = 43) %>%
+    dplyr::bind_rows(filter(tr_gva, region_id != 4))
+
 
   coastal_tourism_value <- full_join(tr_accomm, tr_gva, by = c("year", "region_id")) %>%
     mutate(tourism_gva_per_accom = cntry_tourism_gva/accom_per_area)
@@ -50,6 +63,9 @@ TR <- function(layers){
       filter(year == scen_year) %>%
       mutate(score = status*100) %>%
       select(region_id, score) %>%
+      dplyr::mutate(region_id = paste(
+        "BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"
+      )) %>%
       tidyr::complete(region_id = paste0(
         "BHI-",
         stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
@@ -58,6 +74,9 @@ TR <- function(layers){
     tr_trend %>%
       rename(score = expectedchange5yrs) %>%
       select(region_id, score) %>%
+      dplyr::mutate(region_id = paste(
+        "BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"
+      )) %>%
       tidyr::complete(region_id = paste0(
         "BHI-",
         stringr::str_pad(c(1:3, 5:43), 3, "left", 0)

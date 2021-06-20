@@ -10,16 +10,11 @@ LSP <- function(layers){
 
   ## Status ----
 
-  lsp_status <- AlignDataYears(layer_nm="lsp_status", layers_obj=layers) %>%
+  lsp_status <- ohicore::AlignDataYears(layer_nm="lsp_status", layers_obj=layers) %>%
     dplyr::mutate(dimension = as.character(dimension)) %>%
     dplyr::filter(scenario_year == scen_year) %>%
-    dplyr::select(region_id = rgn_id, score, dimension) %>%
+    dplyr::select(region_id = , score, dimension) %>%
     dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
-
-  # lsp_status <- read.csv(here::here("index", "layers", "lsp_status10_w_mgmt_bhi2021.csv")) %>%
-  #   dplyr::mutate(dimension = as.character(dimension)) %>%
-  #   dplyr::select(region_id = bhi_id, score, dimension) %>%
-  #   dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
 
 
   ## Trend ----

@@ -17,22 +17,11 @@ NP <- function(layers){
   scen_year <- layers$data$scenario_year
 
 
-  bbmsy <- AlignDataYears(layer_nm="np_bbmsy", layers_obj=layers) %>%
+  bbmsy <- ohicore::AlignDataYears(layer_nm="np_bbmsy", layers_obj=layers) %>%
     dplyr::mutate(metric="bbmsy")
 
-  ffmsy <- AlignDataYears(layer_nm="np_ffmsy", layers_obj=layers) %>%
+  ffmsy <- ohicore::AlignDataYears(layer_nm="np_ffmsy", layers_obj=layers) %>%
     dplyr::mutate(metric="ffmsy")
-
-  landings <- AlignDataYears(layer_nm="np_catch", layers_obj=layers)
-
-
-  # bbmsy <- read.csv(here::here("index", "layers", "np_bbmsy_bhi2021.csv"))
-  # bbmsy <- read.csv(here::here("index", "layers", "np_bbmsy_2xtrigger_bhi2021.csv"))
-  # ffmsy <- read.csv(here::here("index", "layers", "np_ffmsy_bhi2021.csv"))
-  # metric_scores <- rbind(
-  #   mutate(bbmsy, metric = "bbmsy"),
-  #   mutate(ffmsy, metric = "ffmsy")
-  # )
 
 
   ## combine bbmsy and ffmsy into single object
