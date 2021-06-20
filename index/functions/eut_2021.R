@@ -44,9 +44,16 @@ EUT <- function(layers){
     ## need to aggregate to seasonal averages:
     if(ind %in% c("secchi", "chla", "din", "dip")){
 
+      if(!no_coastal){
+
+      }
+
       ## Calculate mean monthly value for each month
       monthly_means <- layer %>%
         filter(str_detect(helcom_id, ifelse(no_coastal, "^SEA-", ".*"))) %>%
+        ## uncertainty about Åland and Archipelago sea
+        ## so filter out and will set scores to NA here...
+        filter(!region_id %in% c("BHI-036", "BHI-043")) %>%
         group_by(!!!syms(union(spatialunits, c("subbasin_id", "year", "month")))) %>%
         summarise(
           month_mean = mean(indicator_value, na.rm = TRUE),
@@ -113,6 +120,9 @@ EUT <- function(layers){
         by = intersect(c("subbasin_id", "region_id"), names(status_recent_yr))
       ) %>%
       mutate(status = round(status*100, 2), dimension = "status") %>%
+      ## where aggregated coastal and noncoastal areas above,
+      ## need to reassign BHI-036 adn BHI-043 to NA
+      mutate(status = ifelse(region_id %in% c("BHI-036", "BHI-043"), NA, status)) %>%
       dplyr::select(region_id, score = status, subbasin_id, dimension)
 
 
@@ -163,6 +173,9 @@ EUT <- function(layers){
     result[["basin_trend"]] <- lm_estim %>%
       ## joining regions lookup expands from subbasins to one row per BHI region
       full_join(mutate(rgns_complete, subbasin_id = as.character(subbasin_id))) %>%
+      ## where aggregated coastal and noncoastal areas above,
+      ## need to reassign BHI-036 adn BHI-043 to NA
+      mutate(trend_score = ifelse(region_id %in% c("BHI-036", "BHI-043"), NA, trend_score)) %>%
       mutate(score = round(trend_score, 3), dimension = "trend") %>%
       select(score, subbasin_id, dimension, region_id)
 
@@ -271,15 +284,39 @@ EUT <- function(layers){
   }
 
   ## EUTROPHIATION SUB-GOAL SCORES ----
-  ## join all five indicators, and take geometric mean
-  scores <- dplyr::bind_rows(secchi_indicator, chla_indicator, din_indicator, dip_indicator, oxyg_indicator) %>%
+  ## join all five indicators, and take geometric mean for status,
+  ## arithmetic mean for trend
+
+  eut_status <- dplyr::bind_rows(secchi_indicator, chla_indicator, din_indicator, dip_indicator, oxyg_indicator) %>%
+    filter(dimension == "status") %>%
     select(subbasin_id, indicator, dimension, score) %>%
     distinct() %>%
     dplyr::group_by(subbasin_id, dimension) %>%
     dplyr::summarise(score = ifelse(
       sum(is.na(score)) == n(), NA,
-      ## using an arithmetic mean here; maybe should use psych::geometric.mean
-      ## then, would need to separate out and still use arithmetic mean for trend!
+      ## usee an arithmetic mean here?
+      mean(score, na.rm = TRUE)
+      ## maybe should use psych::geometric.mean?
+      # psych::geometric.mean(score, na.rm = TRUE)
+    )) %>%
+    dplyr::mutate(score = round(score, 2)) %>%
+    ungroup() %>%
+    ## rejoin with region ids
+    full_join(mutate(rgns_complete, subbasin_id = as.character(subbasin_id))) %>%
+    mutate(goal = "EUT", score = ifelse(is.nan(score), NA, score)) %>%
+    select(region_id, goal, dimension, score) %>%
+    ## because of uncertainty with EUT calculation for regions 36 & 43
+    ## set these region's scores to NA
+    mutate(score = ifelse(region_id %in% c("BHI-036", "BHI-043"), NA, score))
+
+  eut_trend <- dplyr::bind_rows(secchi_indicator, chla_indicator, din_indicator, dip_indicator, oxyg_indicator) %>%
+    filter(dimension == "trend") %>%
+    select(subbasin_id, indicator, dimension, score) %>%
+    distinct() %>%
+    dplyr::group_by(subbasin_id, dimension) %>%
+    dplyr::summarise(score = ifelse(
+      sum(is.na(score)) == n(), NA,
+      ## using an arithmetic mean here for trend!
       mean(score, na.rm = TRUE)
     )) %>%
     dplyr::mutate(score = round(score, 2)) %>%
@@ -287,8 +324,12 @@ EUT <- function(layers){
     ## rejoin with region ids
     full_join(mutate(rgns_complete, subbasin_id = as.character(subbasin_id))) %>%
     mutate(goal = "EUT", score = ifelse(is.nan(score), NA, score)) %>%
-    select(region_id, goal, dimension, score)
+    select(region_id, goal, dimension, score) %>%
+    ## because of uncertainty with EUT calculation for regions 36 & 43
+    ## set these region's scores to NA
+    mutate(score = ifelse(region_id %in% c("BHI-036", "BHI-043"), NA, score))
 
+  scores <- rbind(eut_status, eut_trend)
 
   return(scores)
 

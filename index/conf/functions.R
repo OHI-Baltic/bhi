@@ -13,6 +13,21 @@ FIS <- function(layers){
   ffmsy <- AlignDataYears(layer_nm="fis_ffmsy", layers_obj=layers) %>%
     dplyr::mutate(metric="ffmsy")
 
+  catches <- AlignDataYears(layer_nm="fis_catch", layers_obj=layers) %>%
+    select(year = scenario_year, region_id, stock, catch = value)
+
+
+  # bbmsy <- read.csv(here::here("index", "layers", "fis_bbmsy_bhi2021.csv"))
+  # bbmsy <- read.csv(here::here("index", "layers", "fis_bbmsy_2xtrigger_bhi2021.csv"))
+  # ffmsy <- read.csv(here::here("index", "layers", "fis_ffmsy_bhi2021.csv"))
+  # catches <- read.csv(here::here("index", "layers", "fis_catch_bhi2021.csv")) %>%
+  #   select(year, region_id, stock, catch = value)
+  # metric_scores <- rbind(
+  #   mutate(bbmsy, metric = "bbmsy"),
+  #   mutate(ffmsy, metric = "ffmsy")
+  # )
+
+
   ## combine bbmsy and ffmsy into single object
   metric_scores <- rbind(
     dplyr::select(bbmsy, -fis_bbmsy_year, -layer_name, year = scenario_year),
@@ -23,18 +38,6 @@ FIS <- function(layers){
     tidyr::pivot_wider(names_from = metric, values_from = value)
 
 
-  landings <- AlignDataYears(layer_nm="fis_landings", layers_obj=layers) %>%
-    select(year = scenario_year, region_id, stock, landings)
-
-  cod_penalty <- AlignDataYears(layer_nm="fis_cod_penalty", layers_obj=layers) %>%
-    dplyr::mutate(
-      stock = as.character(unique(bbmsy$stock)) %>%
-        grep(pattern = "cod", value = TRUE) %>%
-        grep(pattern = "32", value = TRUE)
-    ) %>%
-    select(year = scenario_year, region_id, penalty_factor, stock)
-
-
   ## BSCORES
   ## STEP 1: converting B/Bmsy and F/Fmsy to B-scores ----
   ## note: these parameters can be changed (see data prep for exploration)!
@@ -43,7 +46,7 @@ FIS <- function(layers){
   upperB2 <- 5
 
   B_scores <- metric_scores %>%
-    mutate(
+    dplyr::mutate(
       score_type = "B_score",
 
       score = ifelse(
@@ -57,7 +60,7 @@ FIS <- function(layers){
         )
       )
     ) %>%
-    mutate(
+    dplyr::mutate(
       score = ifelse(
         score <= 0.1, 0.1,
         ifelse(score > 1, 1, score)
@@ -83,7 +86,7 @@ FIS <- function(layers){
   )
 
   F_scores <- metric_scores %>%
-    mutate(
+    dplyr::mutate(
       score_type = "F_score",
 
       score = ifelse(
@@ -118,7 +121,7 @@ FIS <- function(layers){
     ) %>%
     ## set scores less than 0.1 to 0.1, greater than 1 to 1
     ## 0.1 rather than zero because one zero w/ geometric mean results in a zero score
-    mutate(
+    dplyr::mutate(
       score = ifelse(
         score <= 0.1, 0.1,
         ifelse(score > 1, 1, score)
@@ -128,10 +131,11 @@ FIS <- function(layers){
   ## STEP 3: averaging the F and B-scores to get the stock status score ----
 
   status_scores <- rbind(B_scores, F_scores) %>%
-    group_by(region_id, stock, year) %>%
-    summarize(score = mean(score, na.rm = TRUE)) %>% # hist(scores$score)
-    left_join(
-      spread(rbind(B_scores, F_scores), key = "score_type", value = "score"),
+    dplyr::group_by(region_id, stock, year) %>%
+    dplyr::summarize(score = mean(score, na.rm = TRUE)) %>%
+    dplyr::ungroup() %>%
+    dplyr::left_join(
+      tidyr::pivot_wider(rbind(B_scores, F_scores), names_from = "score_type", values_from = "score"),
       by = c("year", "stock", "region_id")
     )
 
@@ -139,18 +143,19 @@ FIS <- function(layers){
   ## STEP 4: calculating the weights ----
 
   ## subset the data to include only the most recent 10 years
-  # landings <- dplyr::filter(landings, year %in% (scen_year-9):scen_year)
+  # catches <- dplyr::filter(catches, year %in% (scen_year-9):scen_year)
 
   ## we use the average catch for each stock/region across the last 25 years to obtain weights
-  weights <- landings %>%
-    filter(year > scen_year - 25) %>%
+  weights <- catches %>%
+    dplyr::filter(year > scen_year - 25) %>%
     ## each region/stock will have same avg catch across years, timeseries mean
-    group_by(region_id, stock) %>%
-    mutate(avgCatch = mean(landings)) %>%
-    ungroup() %>%
-    group_by(region_id, year) %>%
-    mutate(totCatch = sum(avgCatch)) %>% # total (i.e. all stock) catch on average (across years)
-    ungroup() %>%
+    dplyr::group_by(region_id, stock) %>%
+    dplyr::mutate(avgCatch = mean(catch, na.rm = TRUE)) %>%
+    dplyr::ungroup() %>%
+    dplyr::group_by(region_id, year) %>%
+    ## total (i.e. all stock) catch on average (across years)
+    dplyr::mutate(totCatch = sum(avgCatch)) %>%
+    dplyr::ungroup() %>%
     ## average prop. of catch each stock accounts for, over last 25yr
     dplyr::mutate(propCatch = avgCatch/totCatch) %>%
     data.frame()
@@ -161,27 +166,15 @@ FIS <- function(layers){
   ## STATUS
 
   ## join scores and weights to calculate status
-  status_with_penalty <- weights %>%
+  status_weighted <- weights %>%
 
     ## start with overall score as an average of B-scores and F-scores
-    ## these averages will be weighted by stock landings and have cod condition penalty applied
-    left_join(status_scores, by = c("region_id", "year", "stock")) %>%
-    filter(!is.na(score)) %>% # remove missing data
+    ## these averages will be weighted by stock catches
+    dplyr::left_join(status_scores, by = c("region_id", "year", "stock")) %>%
+    dplyr::filter(!is.na(score)) %>%
 
-    ## apply penalty because bad cod condition in eastern baltic
-    left_join(cod_penalty, by = c("year", "region_id", "stock")) %>%
-    mutate(penalty = ifelse(
-      is.na(penalty_factor) & !str_detect(stock, "cod.*32"),
-      1, penalty_factor
-    )) %>%
-    # is.na(penalty_factor), 1, penalty_factor)) %>%
-    dplyr::select(-penalty_factor) %>%
-    mutate(score = penalty*score)
-
-  ## calculate BHI scores, using stocks by region
-  ## scores are geometric mean weighted by stock proportions of total catch in each region
-  status_scores <- status_with_penalty %>%
-    dplyr::filter(!is.na(score)) %>% # remove missing data
+    ## calculate BHI scores, using stocks by region
+    ## scores are geometric mean weighted by stock proportions of total catch in each region
     dplyr::group_by(region_id, year) %>%
     dplyr::summarize(status_prop = prod(score^propCatch)) %>%
     dplyr::ungroup() %>%
@@ -192,7 +185,7 @@ FIS <- function(layers){
 
   trend_years <- (scen_year-4):scen_year
 
-  trend <- status_scores %>%
+  trend <- status_weighted %>%
     dplyr::group_by(region_id) %>%
     dplyr::filter(year %in% trend_years) %>%
     dplyr::do(mdl = lm(status_prop ~ year, data = .)) %>%
@@ -205,7 +198,7 @@ FIS <- function(layers){
 
   scores <- rbind(
     ## status scores
-    status_scores %>%
+    status_weighted %>%
       dplyr::filter(year == scen_year) %>%
       dplyr::mutate(status = round(status_prop * 100, 1)) %>%
       dplyr::select(region_id, score = status) %>%
@@ -227,14 +220,14 @@ MAR <- function(layers){
   scen_year <- layers$data$scenario_year
 
   mar_status <- data.frame(
-    region_id = seq(1, 42, 1),
+    region_id = paste0("BHI-", stringr::str_pad(c(1:3, 5:43), 3, "left", 0)),
     goal = "MAR",
     dimension = "status",
     score = rep(NA, 42)
   )
 
   mar_trend <- data.frame(
-    region_id = seq(1, 42, 1),
+    region_id = paste0("BHI-", stringr::str_pad(c(1:3, 5:43), 3, "left", 0)),
     goal = "MAR",
     dimension = "trend",
     score = rep(NA, 42)
@@ -259,8 +252,8 @@ FP <- function(layers, scores){
   mar_harvest_tonnes <- AlignDataYears(layer_nm="mar_harvest", layers_obj=layers) %>%
     select(year = scenario_year, region_id, produced_tonnes)
 
-  fis_landings <- AlignDataYears(layer_nm="fis_landings", layers_obj=layers) %>%
-    select(year = scenario_year, region_id, stock, landings)
+  fis_catch <- AlignDataYears(layer_nm="fis_catch", layers_obj=layers) %>%
+    select(year = scenario_year, region_id, stock, value)
 
 
   ## wrangle and join mar and fis data ----
@@ -268,19 +261,19 @@ FP <- function(layers, scores){
   ## before joining the fis and mar datasets, need to estimate landings by region:
   ## in fis data prep the ICES assessment area values were assigned to each bhi region,
   ## because fis goal uses ratios not values
-  fis_landings <- read.csv(file.path(dir_assess, "layers", "rgns_complete.csv")) %>%
+  fis_catch <- read.csv(file.path(dir_assess, "layers", "rgns_complete.csv")) %>%
     select(region_id, region_name, region_area_km2) %>%
-    right_join(fis_landings, by = "region_id") %>%
+    right_join(fis_catch, by = "region_id") %>%
     group_by(year, stock) %>%
     mutate(stock_assess_area = sum(region_area_km2)) %>%
     ungroup() %>%
-    mutate(rgn_landings = landings*(region_area_km2/stock_assess_area))
+    mutate(rgn_catch = value*(region_area_km2/stock_assess_area))
 
 
-  fp_data <- fis_landings %>%
-    select(region_id, region_name, year, stock, rgn_landings) %>%
+  fp_data <- fis_catch %>%
+    select(region_id, region_name, year, stock, rgn_catch) %>%
     group_by(region_id, region_name, year) %>%
-    summarize(rgn_landings = sum(rgn_landings)) %>%
+    summarize(rgn_catch = sum(rgn_catch)) %>%
     ungroup() %>%
     left_join(mar_harvest_tonnes, by = c("year", "region_id"))
 
@@ -296,7 +289,7 @@ FP <- function(layers, scores){
 
 
   fp_weights <- fp_data %>%
-    mutate(prop_wildcaught = rgn_landings/(rgn_landings + pmax(0, produced_tonnes))) %>%
+    mutate(prop_wildcaught = rgn_catch/(rgn_catch + pmax(0, produced_tonnes))) %>%
     mutate(prop_wildcaught = ifelse(is.na(produced_tonnes), 1, prop_wildcaught)) %>%
     ## if have some mariculture data for before 1991, will use 1991 ratio for the region
     mutate(ratio1991 = prop_wildcaught*(year == 1991)) %>%
@@ -338,7 +331,7 @@ FP <- function(layers, scores){
       goal == "FIS" &
         is.na(score) &
         dimension == "score" &
-        (!is.na( weight) &  weight != 0)
+        (!is.na(weight) & weight != 0)
     )
   if(dim(tmp)[1] > 0){
     warning(sprintf(
@@ -368,7 +361,7 @@ FP <- function(layers, scores){
         dimension == "score" &
         region_id != 0 &
         (!is.na(score) & score > 0) &
-        (is.na( weight) | weight == 0)
+        (is.na(weight) | weight == 0)
     )
   if(dim(tmp)[1] > 0){
     warning(sprintf(
@@ -412,8 +405,9 @@ NP <- function(layers){
   ## Revised to use multi-year framework, incorporating scenario_data_years
   ## Uses ohicore::AlignDataYears() rather than ohicore::SelectLayersData()
 
-  ## this is the same function as used for FIS, but only sprat data is used here
-  ## consider updating for v2019 to include: sediment extraction, seaweeds, ornamentals, corals, shells, sponges?
+  ## this similar to the function as used for FIS,
+  ## but as only sprat data is used here, FIS weighting by catch step is eliminated
+  ## consider updating for v2022 to include: sediment extraction, seaweeds, ornamentals, corals, shells, sponges?
 
   ## OHI global includes exposure, risk, sustainability estimates by product:
   ## exposure (based on habitat types), risk (from fishing activities harmfulness ratings)
@@ -429,7 +423,16 @@ NP <- function(layers){
   ffmsy <- AlignDataYears(layer_nm="np_ffmsy", layers_obj=layers) %>%
     dplyr::mutate(metric="ffmsy")
 
-  landings <- AlignDataYears(layer_nm="np_landings", layers_obj=layers)
+  landings <- AlignDataYears(layer_nm="np_catch", layers_obj=layers)
+
+
+  # bbmsy <- read.csv(here::here("index", "layers", "np_bbmsy_bhi2021.csv"))
+  # bbmsy <- read.csv(here::here("index", "layers", "np_bbmsy_2xtrigger_bhi2021.csv"))
+  # ffmsy <- read.csv(here::here("index", "layers", "np_ffmsy_bhi2021.csv"))
+  # metric_scores <- rbind(
+  #   mutate(bbmsy, metric = "bbmsy"),
+  #   mutate(ffmsy, metric = "ffmsy")
+  # )
 
 
   ## combine bbmsy and ffmsy into single object
@@ -535,55 +538,18 @@ NP <- function(layers){
 
   ## STEP 3: averaging the F and B-scores to get the stock status score ----
 
-  status_scores <- rbind(B_scores, F_scores) %>%
+  status <- rbind(B_scores, F_scores) %>%
     group_by(region_id, stock, year) %>%
     summarize(score = mean(score, na.rm = TRUE)) %>% # hist(scores$score)
     left_join(
       spread(rbind(B_scores, F_scores), key = "score_type", value = "score"),
       by = c("year", "stock", "region_id")
-    )
-
-
-  ## STEP 4: calculating the weights ----
-
-  ## subset the data to include only the most recent 10 years
-  landings <- landings %>%
-    dplyr::select(year = scenario_year, region_id, stock, landings) %>%
-    dplyr::filter(year %in% (max(year)-9):max(year))
-
-  ## we use the average catch for each stock/region across the last 25 years to obtain weights
-  ## (each region/stock will have the same average catch across years)
-  weights <- landings %>%
-    filter(year > max(year) - 26) %>%
-    ## each region/stock will have same avg catch across years, timeseries mean
-    group_by(region_id, stock) %>%
-    mutate(avgCatch = mean(landings)) %>%
-    ungroup() %>%
-    group_by(region_id, year) %>%
-    mutate(totCatch = sum(avgCatch)) %>% # total (i.e. all stock) catch on average (across years)
-    ungroup() %>%
-    ## average prop. of catch each stock accounts for, over last 25yr
-    dplyr::mutate(propCatch = avgCatch/totCatch) %>%
+    ) %>%
+    filter(!is.na(score)) %>% # remove missing data
     data.frame()
 
-  ## join scores and weights to calculate status
-  status_scores_weights <- weights %>%
-    ## start with overall score as an average of B-scores and F-scores
-    ## these averages will be weighted by stock landings and have cod condition penalty applied
-    left_join(status_scores, by = c("region_id", "year", "stock")) %>%
-    filter(!is.na(score)) # remove missing data
 
-
-  ## STEP 5: calculate and return status and trend ----
-
-  ## calculate BHI scores, using stocks by region (though currently NP data consists of only one stock)
-  ## scores are geometric mean weighted by stock proportions of total catch in each region
-  status <- status_scores_weights %>%
-    dplyr::filter(!is.na(score)) %>% # remove missing data
-    dplyr::group_by(region_id, year) %>%
-    dplyr::summarize(status_prop = prod(score^propCatch)) %>%
-    dplyr::ungroup() %>%
-    data.frame()
+  ## STEP 5: calculate trend and return score results ----
 
   ## trend calculations
   ## could replace trend calc w/ ohicore::CalculateTrend, but then coeff is normalized by min trend year...
@@ -595,7 +561,7 @@ NP <- function(layers){
   trend <- status %>%
     dplyr::group_by(region_id) %>%
     dplyr::filter(year %in% trend_years) %>%
-    dplyr::do(mdl = lm(status_prop ~ year, data = .)) %>%
+    dplyr::do(mdl = lm(score ~ year, data = .)) %>%
     dplyr::summarize(
       region_id = region_id,
       trend = coef(mdl)["year"] * 5
@@ -607,18 +573,24 @@ NP <- function(layers){
     ## status scores
     status %>%
       dplyr::filter(year == scen_year) %>%
-      dplyr::mutate(status = round(status_prop * 100, 1)) %>%
+      dplyr::mutate(status = round(score * 100, 1)) %>%
       dplyr::select(region_id, score = status) %>%
-      tidyr::complete(region_id = full_seq(c(1, 42), 1)) %>%
+      tidyr::complete(region_id = paste0(
+        "BHI-",
+        stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
+      )) %>%
       dplyr::mutate(dimension = "status"),
 
     ## trend scores
     trend %>%
       dplyr::select(region_id, score = trend) %>%
-      tidyr::complete(region_id = full_seq(c(1, 42), 1)) %>%
+      tidyr::complete(region_id = paste0(
+        "BHI-",
+        stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
+      )) %>%
       dplyr::mutate(dimension = "trend")
 
-    ) %>% dplyr::mutate(goal = "NP")
+  ) %>% dplyr::mutate(goal = "NP")
 
   return(scores)
 
@@ -638,7 +610,13 @@ AO <- function(layers){
   ao_status <- AlignDataYears(layer_nm="ao_stock_status", layers_obj=layers) %>%
     dplyr::mutate(dimension = as.character(dimension)) %>%
     dplyr::filter(scenario_year == scen_year) %>%
-    dplyr::select(region_id = rgn_id, score, dimension)
+    dplyr::select(region_id = rgn_id, score, dimension) %>%
+    dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
+
+  # ao_status <- read.csv(here::here("index", "layers", "ao_stock_status_bhi2021.csv")) %>%
+  #   dplyr::mutate(dimension = as.character(dimension)) %>%
+  #   dplyr::select(region_id = bhi_id, score, dimension) %>%
+  #   dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
 
 
   ## Trend ----
@@ -646,7 +624,13 @@ AO <- function(layers){
   ao_trend <- AlignDataYears(layer_nm="ao_stock_slope", layers_obj=layers) %>%
     dplyr::mutate(dimension = as.character(dimension)) %>%
     dplyr::filter(scenario_year == scen_year) %>%
-    dplyr::select(region_id = rgn_id, score, dimension)
+    dplyr::select(region_id = rgn_id, score, dimension) %>%
+    dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
+
+  # ao_trend <- read.csv(here::here("index", "layers", "ao_stock_slope_bhi2021.csv")) %>%
+  #   dplyr::mutate(dimension = as.character(dimension)) %>%
+  #   dplyr::select(region_id = bhi_id, score, dimension) %>%
+  #   dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
 
 
   ## Return artisial fishing opportunities status and trend scores ----
@@ -839,6 +823,10 @@ ICO <- function(layers){
     ## because of infrequent iucn assessments, there will inevitably be a lag in iconic species status...
     rename(year = scenario_year)
 
+  # ico_subbasin_assessments <- read.csv(here::here("index", "layers", "sp_ico_assessments_bhi2021.csv")) %>%
+  #   rename(year = assessment_year_red_list) %>%
+  #   mutate(region_id = paste0("BHI-", stringr::str_pad(region_id, 3, "left", 0)))
+
 
   ## Create vulnerability lookup table ----
   vuln_lookup <- mutate(
@@ -910,7 +898,7 @@ ICO <- function(layers){
 
   ## for now have NA iconic species trends...
   ico_trend <- data.frame(
-    region_id = seq(1, 42, 1),
+    region_id = paste0("BHI-", stringr::str_pad(c(1:3, 5:43), 3, "left", 0)),
     score = rep(NA, 42)
   )
 
@@ -943,22 +931,29 @@ LSP <- function(layers){
   lsp_status <- AlignDataYears(layer_nm="lsp_status", layers_obj=layers) %>%
     dplyr::mutate(dimension = as.character(dimension)) %>%
     dplyr::filter(scenario_year == scen_year) %>%
-    dplyr::select(region_id = rgn_id, score, dimension)
+    dplyr::select(region_id = rgn_id, score, dimension) %>%
+    dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
+
+  # lsp_status <- read.csv(here::here("index", "layers", "lsp_status10_w_mgmt_bhi2021.csv")) %>%
+  #   dplyr::mutate(dimension = as.character(dimension)) %>%
+  #   dplyr::select(region_id = bhi_id, score, dimension) %>%
+  #   dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
 
 
   ## Trend ----
 
-  lsp_trend <- AlignDataYears(layer_nm="lsp_trend", layers_obj=layers) %>%
-    dplyr::mutate(dimension = as.character(dimension)) %>%
-    dplyr::filter(scenario_year == scen_year) %>%
-    dplyr::select(region_id = rgn_id, score, dimension)
+  ## for now have NA Lasting special places trends...
+  lsp_trend <- data.frame(
+    region_id = paste("BHI", stringr::str_pad(c(1:3, 5:43), 3, "left", 0), sep = "-"),
+    score = rep(NA, 42)
+  )
 
 
   ## Return lasting special places status and trend scores ----
 
   lsp_status_and_trend <- dplyr::bind_rows(
     mutate(lsp_status, goal = "LSP"),
-    mutate(lsp_trend, goal = "LSP")
+    mutate(lsp_trend, goal = "LSP",  dimension = "trend")
   )
   scores <- select(lsp_status_and_trend, region_id, goal, dimension, score)
 
@@ -994,8 +989,10 @@ CON <- function(layers){
 
   scen_year <- layers$data$scenario_year
 
+  # dir_assess <- here::here("index")
   rgns_complete <- read.csv(file.path(dir_assess, "layers", "rgns_complete.csv")) %>%
     select(region_id, subbasin, eez, subbasin_id)
+
 
   ## From code in 'functions.R CON' of v2015 BHI assessment, see bhi-1.0-archive github repo
   ## Revised to use multi-year framework, incorporating scenario_data_years and layers$data$scenario_year
@@ -1044,10 +1041,7 @@ CON <- function(layers){
       group_by(subbasin_id) %>%
       summarize(score = mean(status, na.rm = TRUE)) %>% # status from biota & sediment data combined w equal wgt
       right_join(rgns_complete, by = "subbasin_id") %>%
-      mutate(dimension = "status") %>%
-      ## region 36 is archipelago sea not åland subbasin;
-      ## will separate subbasins in future calculations, but for now, not calculating CW scores for region 36
-      mutate(score = ifelse(region_id == 36, NA, score))
+      mutate(dimension = "status")
 
     result[["basin_matrix_status"]] <- basin_matrix_status %>%
       right_join(
@@ -1056,10 +1050,7 @@ CON <- function(layers){
           mutate(matrix = list(c("bio", "sed"))) %>%
           tidyr::unnest(c(matrix)),
         by = c("matrix", "subbasin_id")
-      ) %>%
-      ## region 36 is archipelago sea not åland subbasin;
-      ## will separate subbasins in future calculations, but for now, not calculating CW scores for region 36
-      mutate(status = ifelse(region_id == 36, NA, status))
+      )
 
 
     ## TREND CALCULATIONS ----
@@ -1097,10 +1088,7 @@ CON <- function(layers){
           mutate(matrix = list(c("bio", "sed"))) %>%
           tidyr::unnest(c(matrix)),
         by = c("matrix", "subbasin_id")
-      ) %>%
-      ## region 36 is archipelago sea not åland subbasin;
-      ## will separate subbasins in future calculations, but for now, not calculating CW scores for region 36
-      mutate(trend_score = ifelse(region_id == 36, NA, trend_score))
+      )
 
     result[["basin_trend"]] <- lm_estim %>%
       select(-trend_mdl) %>%
@@ -1109,10 +1097,7 @@ CON <- function(layers){
       ## constrain trend values between one and negative one
       mutate(score = ifelse(-1 <= score & score <= 1, score, score*abs(1/score))) %>%
       right_join(rgns_complete, by = "subbasin_id") %>%
-      mutate(dimension = "trend") %>%
-      ## region 36 is archipelago sea not åland subbasin;
-      ## will separate subbasins in future calculations, but for now, not calculating CW scores for region 36
-      mutate(score = ifelse(region_id == 36, NA, score))
+      mutate(dimension = "trend")
 
 
     ## return scores for bio and sed matrices and combined indicator scores
@@ -1139,6 +1124,21 @@ CON <- function(layers){
   yrs <- (scen_year-6):(scen_year-1)
 
   ## three primary contaminants indicators ----
+
+  # pcb_indicator <- con_indicators(
+  #   read.csv(here::here("index", "layers", "cw_con_pcb_bhi2021.csv")),
+  #   yrs, bio_thresh = 75, sed_thresh = 4.1
+  # )
+  # pfos_indicator <- con_indicators(
+  #   read.csv(here::here("index", "layers", "cw_con_pfos_bhi2021.csv")),
+  #   yrs, bio_thresh = 9.1, sed_thresh = NULL
+  # )
+  # dioxin_indicator <- con_indicators(
+  #   read.csv(here::here("index", "layers", "cw_con_dioxin_bhi2021.csv")),
+  #   yrs, bio_thresh = 6.5, sed_thresh = 0.86
+  # )
+
+
   pcb_indicator <- ohicore::AlignDataYears(layer_nm="cw_con_pcb", layers_obj=layers) %>%
     rename(year = scenario_year) %>%
     ## don't use archipelago sea data points...
@@ -1187,14 +1187,16 @@ CON <- function(layers){
     dplyr::mutate(score = round(score, 3)) %>%
     ungroup() %>%
     ## rejoin with region ids so can integrate concerning substances indicator
-    left_join(rgns_complete, by = "subbasin_id") %>%
-    ## region 36 is archipelago sea not åland subbasin;
-    ## will separate subbasins in future calculations, but for now, not calculating CW scores for region 36
-    ## once again, will set to NA here....
-    mutate(score = ifelse(region_id == 36, NA, score))
+    left_join(rgns_complete, by = "subbasin_id")
 
 
   ## concerning substances indicator (previously a uniform baltic-wide penalty factor) ----
+
+  # concern_subst_layer <- read.csv(here::here("index", "layers", "cw_con_penalty_bhi2019.csv")) %>%
+  #   dplyr::filter(year %in% yrs) %>%
+  #   mutate(substance = paste0(substance, "_monitored")) %>%
+  #   tidyr::pivot_wider(names_from = "substance", values_from = "monitored")
+
   concern_subst_layer <- ohicore::AlignDataYears(layer_nm="cw_con_penalty", layers_obj=layers) %>%
     rename(year = scenario_year) %>%
     ## look at monitoring only within time period of interest
@@ -1243,7 +1245,12 @@ EUT <- function(layers){
 
   ## adjust subbasin_id values so joinable with helcom_id values
   rgns_complete <- read.csv(file.path(dir_assess, "layers", "rgns_complete.csv")) %>%
-    select(region_id, subbasin_id)
+    select(region_id, subbasin_id) %>%
+    mutate(region_id = paste0("BHI-", stringr::str_pad(c(1:3, 5:43), 3, "left", 0)))
+
+  ## adjust subbasin_id values so joinable with helcom_id values
+  wfd_areas <- read.csv(file.path(dir_assess, "layers", "wfd_areas.csv"))
+
 
 
   ## From code in 'functions.R EUT' of v2015 BHI assessment, see bhi-1.0-archive github repo
@@ -1277,9 +1284,16 @@ EUT <- function(layers){
     ## need to aggregate to seasonal averages:
     if(ind %in% c("secchi", "chla", "din", "dip")){
 
+      if(!no_coastal){
+
+      }
+
       ## Calculate mean monthly value for each month
       monthly_means <- layer %>%
         filter(str_detect(helcom_id, ifelse(no_coastal, "^SEA-", ".*"))) %>%
+        ## uncertainty about Åland and Archipelago sea
+        ## so filter out and will set scores to NA here...
+        filter(!region_id %in% c("BHI-036", "BHI-043")) %>%
         group_by(!!!syms(union(spatialunits, c("subbasin_id", "year", "month")))) %>%
         summarise(
           month_mean = mean(indicator_value, na.rm = TRUE),
@@ -1332,6 +1346,13 @@ EUT <- function(layers){
       filter(year == max(year)) %>%
       ungroup()
 
+    if(!no_coastal){
+      ## if calculating with COASTAL areas + targets and taking area-weighted mean:
+      status_recent_yr <- status_recent_yr %>%
+        left_join(wfd_areas, by = "helcom_id") %>%
+        group_by(subbasin_id) %>%
+        summarize(status = weighted.mean(status, area_km2, na.rm = TRUE))
+    }
     result[["basin_status"]] <- status_recent_yr %>%
       ## joining regions lookup expands from subbasins to one row per BHI region
       full_join(
@@ -1339,7 +1360,12 @@ EUT <- function(layers){
         by = intersect(c("subbasin_id", "region_id"), names(status_recent_yr))
       ) %>%
       mutate(status = round(status*100, 2), dimension = "status") %>%
+      ## where aggregated coastal and noncoastal areas above,
+      ## need to reassign BHI-036 adn BHI-043 to NA
+      mutate(status = ifelse(region_id %in% c("BHI-036", "BHI-043"), NA, status)) %>%
       dplyr::select(region_id, score = status, subbasin_id, dimension)
+
+
 
     ## TREND CALCULATIONS ----
     trendlag <- 5 # number of years into future to project trend
@@ -1372,21 +1398,24 @@ EUT <- function(layers){
           ind == "secchi",
           max(-1, min(1, expectedchange5yrs/target)),
           max(-1, min(1, -expectedchange5yrs/target))
-      )) %>%
+        )) %>%
       filter(enough_data)
 
 
     if(!no_coastal){
       ## if calculating with COASTAL areas + targets and taking area-weighted mean:
       lm_estim <- lm_estim %>%
-        left_join(select(coastal_wfd_regions, helcom_id, area_km2_wfd_coastal), by = "helcom_id") %>%
+        left_join(wfd_areas, by = "helcom_id") %>%
         group_by(subbasin_id) %>%
-        summarize(trend_score = weighted.mean(trend_score, area_km2_wfd_coastal, na.rm = TRUE))
+        summarize(trend_score = weighted.mean(trend_score, area_km2, na.rm = TRUE))
     }
 
     result[["basin_trend"]] <- lm_estim %>%
       ## joining regions lookup expands from subbasins to one row per BHI region
       full_join(mutate(rgns_complete, subbasin_id = as.character(subbasin_id))) %>%
+      ## where aggregated coastal and noncoastal areas above,
+      ## need to reassign BHI-036 adn BHI-043 to NA
+      mutate(trend_score = ifelse(region_id %in% c("BHI-036", "BHI-043"), NA, trend_score)) %>%
       mutate(score = round(trend_score, 3), dimension = "trend") %>%
       select(score, subbasin_id, dimension, region_id)
 
@@ -1398,92 +1427,87 @@ EUT <- function(layers){
 
 
   ## Calculate the five contaminants indicators ----
-  secchi_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_secchi", layers_obj=layers) %>%
-    ## don't use archipelago sea data points...
-    filter(region_id != 36) %>%
-    rename(indicator_value = secchi_depth, year = scenario_year) %>%
+  # secchi_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_secchi", layers_obj=layers) %>%
+  #   rename(indicator_value = secchi_depth, year = scenario_year) %>%
+  secchi_indicator <- read.csv(here::here("index", "layers", "cw_eut_secchi_bhi2021.csv")) %>%
+    rename(indicator_value = secchi_depth) %>%
     eut_indicators(
       scen_year,
       "secchi",
       "moving_avg_5yr",
-      layers$data$cw_eut_targets %>%
-        filter(indicator == "summer_secchi") %>%
+      # layers$data$cw_eut_targets %>%
+      read.csv(here::here("index", "layers", "cw_eut_targets_bhi2021.csv")) %>%
+        filter(param == "SECCHI") %>%
         select(helcom_id, target = value),
       no_coastal = TRUE
-    ) %>%
-    ## region 36 is archipelago sea not åland subbasin;
-    ## will separate subbasins in future calculations, but for now, not calculating CW scores for region 36
-    mutate(score = ifelse(region_id == 36, NA, score))
+    )
 
-  chla_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_chla", layers_obj=layers) %>%
-    ## don't use archipelago sea data points...
-    filter(region_id != 36) %>%
-    rename(indicator_value = chla_conc, year = scenario_year) %>%
+  # chla_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_chla", layers_obj=layers) %>%
+  #   rename(indicator_value = chla_conc, year = scenario_year) %>%
+  chla_indicator <- read.csv(here::here("index", "layers", "cw_eut_chla_bhi2021.csv")) %>%
+    rename(indicator_value = chla_conc) %>%
     eut_indicators(
       scen_year,
       "chla",
       "season_mean",
-      layers$data$cw_eut_targets %>%
-        filter(indicator == "summer_chla") %>%
+      # layers$data$cw_eut_targets %>%
+      read.csv(here::here("index", "layers", "cw_eut_targets_bhi2021.csv")) %>%
+        filter(param == "CHLA") %>%
         select(helcom_id, target = value),
-      no_coastal = TRUE
-    ) %>%
-    ## region 36 is archipelago sea not åland subbasin;
-    ## will separate subbasins in future calculations, but for now, not calculating CW scores for region 36
-    mutate(score = ifelse(region_id == 36, NA, score))
+      no_coastal = FALSE
+    )
 
-  din_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_din", layers_obj=layers) %>%
-    ## don't use archipelago sea data points...
-    filter(region_id != 36) %>%
-    mutate(winterofyear = ifelse(month == 12, scenario_year, scenario_year-1)) %>%
+  # din_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_din", layers_obj=layers) %>%
+  #   mutate(winterofyear = ifelse(month == 12, scenario_year, scenario_year-1)) %>%
+  #   rename(indicator_value = din_conc, year = winterofyear) %>%
+  din_indicator <- read.csv(here::here("index", "layers", "cw_eut_din_bhi2021.csv")) %>%
+    mutate(winterofyear = ifelse(month == 12, year, year-1)) %>%
+    select(-year) %>%
     rename(indicator_value = din_conc, year = winterofyear) %>%
     eut_indicators(
       scen_year,
       "din",
       "moving_avg_5yr",
-      layers$data$cw_eut_targets %>%
-        filter(indicator == "winter_DIN") %>%
+      # layers$data$cw_eut_targets %>%
+      read.csv(here::here("index", "layers", "cw_eut_targets_bhi2021.csv")) %>%
+        filter(param == "DIN") %>%
         select(helcom_id, target = value),
       no_coastal = TRUE
-    ) %>%
-    ## region 36 is archipelago sea not åland subbasin;
-    ## will separate subbasins in future calculations, but for now, not calculating CW scores for region 36
-    mutate(score = ifelse(region_id == 36, NA, score))
+    )
 
-  dip_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_dip", layers_obj=layers) %>%
-    ## don't use archipelago sea data points...
-    filter(region_id != 36) %>%
-    mutate(winterofyear = ifelse(month == 12, scenario_year, scenario_year-1)) %>%
+  # dip_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_dip", layers_obj=layers) %>%
+  #   mutate(winterofyear = ifelse(month == 12, scenario_year, scenario_year-1)) %>%
+  #   rename(indicator_value = din_conc, year = winterofyear) %>%
+  dip_indicator <- read.csv(here::here("index", "layers", "cw_eut_dip_bhi2021.csv")) %>%
+    mutate(winterofyear = ifelse(month == 12, year, year-1)) %>%
+    select(-year) %>%
     rename(indicator_value = dip_conc, year = winterofyear) %>%
     eut_indicators(
       scen_year,
       "dip",
       "moving_avg_5yr",
-      layers$data$cw_eut_targets %>%
-        filter(indicator == "winter_DIP") %>%
+      # layers$data$cw_eut_targets %>%
+      read.csv(here::here("index", "layers", "cw_eut_targets_bhi2021.csv")) %>%
+        filter(param == "DIP") %>%
         select(helcom_id, target = value),
       no_coastal = TRUE
-    ) %>%
-    ## region 36 is archipelago sea not åland subbasin;
-    ## will separate subbasins in future calculations, but for now, not calculating CW scores for region 36
-    mutate(score = ifelse(region_id == 36, NA, score))
+    )
 
-  oxyg_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_oxydebt", layers_obj=layers) %>%
-    ## don't include archipelago sea...
-    filter(region_id != 36) %>%
-    rename(season_mean = oxygendebt, year = scenario_year) %>%
+  # oxyg_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_oxydebt", layers_obj=layers) %>%
+  #   rename(season_mean = oxygendebt, year = scenario_year) %>%
+  oxyg_indicator <-  read.csv(here::here("index", "layers", "cw_eut_oxydebt_bhi2019.csv")) %>%
+    rename(season_mean = oxygendebt) %>%
+    mutate(region_id = paste0("BHI-", stringr::str_pad(region_id, 3, "left", 0))) %>%
     eut_indicators(
       scen_year,
       "oxydebt",
       "season_mean",
-      layers$data$cw_eut_targets %>%
-        filter(indicator == "oxyg_debt") %>%
+      # layers$data$cw_eut_targets %>%
+      read.csv(here::here("index", "layers", "cw_eut_targets_bhi2021.csv")) %>%
+        filter(param == "OXYDEBT") %>%
         select(helcom_id, target = value),
       no_coastal = TRUE
-    ) %>%
-    ## region 36 is archipelago sea not åland subbasin;
-    ## will separate subbasins in future calculations, but for now, not calculating CW scores for region 36
-    mutate(score = ifelse(region_id == 36, NA, score))
+    )
 
 
   ## save individual indicators as intermediate results
@@ -1500,15 +1524,39 @@ EUT <- function(layers){
   }
 
   ## EUTROPHIATION SUB-GOAL SCORES ----
-  ## join all five indicators, and take geometric mean
-  eut_scores <- dplyr::bind_rows(secchi_indicator, chla_indicator, din_indicator, dip_indicator, oxyg_indicator) %>%
+  ## join all five indicators, and take geometric mean for status,
+  ## arithmetic mean for trend
+
+  eut_status <- dplyr::bind_rows(secchi_indicator, chla_indicator, din_indicator, dip_indicator, oxyg_indicator) %>%
+    filter(dimension == "status") %>%
     select(subbasin_id, indicator, dimension, score) %>%
     distinct() %>%
     dplyr::group_by(subbasin_id, dimension) %>%
     dplyr::summarise(score = ifelse(
       sum(is.na(score)) == n(), NA,
-      ## using an arithmetic mean here; maybe should use psych::geometric.mean
-      ## then, would need to separate out and still use arithmetic mean for trend!
+      ## usee an arithmetic mean here?
+      mean(score, na.rm = TRUE)
+      ## maybe should use psych::geometric.mean?
+      # psych::geometric.mean(score, na.rm = TRUE)
+    )) %>%
+    dplyr::mutate(score = round(score, 2)) %>%
+    ungroup() %>%
+    ## rejoin with region ids
+    full_join(mutate(rgns_complete, subbasin_id = as.character(subbasin_id))) %>%
+    mutate(goal = "EUT", score = ifelse(is.nan(score), NA, score)) %>%
+    select(region_id, goal, dimension, score) %>%
+    ## because of uncertainty with EUT calculation for regions 36 & 43
+    ## set these region's scores to NA
+    mutate(score = ifelse(region_id %in% c("BHI-036", "BHI-043"), NA, score))
+
+  eut_trend <- dplyr::bind_rows(secchi_indicator, chla_indicator, din_indicator, dip_indicator, oxyg_indicator) %>%
+    filter(dimension == "trend") %>%
+    select(subbasin_id, indicator, dimension, score) %>%
+    distinct() %>%
+    dplyr::group_by(subbasin_id, dimension) %>%
+    dplyr::summarise(score = ifelse(
+      sum(is.na(score)) == n(), NA,
+      ## using an arithmetic mean here for trend!
       mean(score, na.rm = TRUE)
     )) %>%
     dplyr::mutate(score = round(score, 2)) %>%
@@ -1516,15 +1564,12 @@ EUT <- function(layers){
     ## rejoin with region ids
     full_join(mutate(rgns_complete, subbasin_id = as.character(subbasin_id))) %>%
     mutate(goal = "EUT", score = ifelse(is.nan(score), NA, score)) %>%
-    select(region_id, goal, dimension, score)
+    select(region_id, goal, dimension, score) %>%
+    ## because of uncertainty with EUT calculation for regions 36 & 43
+    ## set these region's scores to NA
+    mutate(score = ifelse(region_id %in% c("BHI-036", "BHI-043"), NA, score))
 
-
-  ## because most of archipelago sea is coastal, and coastal data were not used in this assessment
-  ## will set archipelago sea (Åland sea Finland, BHI region 36) eutrophication scores to NA for now
-  ## so as not to be misleading in presentation/visuzlization of results
-  scores <- eut_scores %>%
-    mutate(score = ifelse(region_id == 36, NA, score))
-
+  scores <- rbind(eut_status, eut_trend)
 
   return(scores)
 
@@ -1543,27 +1588,35 @@ TRA <- function(layers){
 
   tra_status <- ohicore::AlignDataYears(layer_nm="cw_tra_status", layers_obj=layers) %>%
     dplyr::filter(scenario_year == scen_year) %>%
-    dplyr::select(region_id = rgn_id, score)
+    dplyr::mutate(dimension = as.character(dimension)) %>%
+    dplyr::select(region_id = bhi_id, score, dimension) %>%
+    dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
+
+  # tra_status <- read.csv(here::here("index", "layers", "cw_trash_status_bhi2021.csv")) %>%
+  #   dplyr::mutate(dimension = as.character(dimension)) %>%
+  #   dplyr::select(region_id = bhi_id, score, dimension) %>%
+  #   dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
 
 
   ## Trend ----
 
   tra_trend <- ohicore::AlignDataYears(layer_nm="cw_tra_trend_scores", layers_obj=layers) %>%
     dplyr::filter(scenario_year == scen_year) %>%
-    dplyr::select(region_id = rgn_id, score)
+    dplyr::mutate(dimension = "trend") %>%
+    dplyr::select(region_id = bhi_id, score = future_trend, dimension) %>%
+    dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
 
+  # tra_trend <- read.csv(here::here("index", "layers", "cw_trash_trend_bhi2021.csv")) %>%
+  #   dplyr::mutate(dimension = "trend") %>%
+  #   dplyr::select(region_id = bhi_id, score = future_trend, dimension) %>%
+  #   dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
 
   ## Return trash status and trend scores ----
 
   tra_status_and_trend <- dplyr::bind_rows(
     mutate(tra_status, dimension = "status", goal = "TRA"),
     mutate(tra_trend, dimension = "trend", goal = "TRA")
-  ) %>%
-  ## region 36 is archipelago sea not åland subbasin;
-  ## because of issues with aggregating CON and EUT, will not include region 36 here
-  ## (do not want region 36 to have Clean Waters score based only on Trash subgoal)
-  ## will separate subbasins in future calculations, but for now, not calculating CW scores for region 36
-  mutate(score = ifelse(region_id == 36, NA, score))
+  )
 
   scores <- select(tra_status_and_trend, region_id, goal, dimension, score)
 
@@ -1680,12 +1733,18 @@ TR <- function(layers){
       filter(year == scen_year) %>%
       mutate(score = status*100) %>%
       select(region_id, score) %>%
-      tidyr::complete(region_id = 1:42) %>%
+      tidyr::complete(region_id = paste0(
+        "BHI-",
+        stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
+      )) %>%
       mutate(dimension = "status", goal = "TR"),
     tr_trend %>%
       rename(score = expectedchange5yrs) %>%
       select(region_id, score) %>%
-      tidyr::complete(region_id = 1:42) %>%
+      tidyr::complete(region_id = paste0(
+        "BHI-",
+        stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
+      )) %>%
       mutate(dimension = "trend", goal = "TR")
   )
 
@@ -1711,12 +1770,17 @@ CS <- function(layers){
     dplyr::filter(scenario_year == scen_year) %>%
     dplyr::select(region_id = rgn_id, score, dimension)
 
+  # cs_status <- read.csv(here::here("index", "layers", "cs_hab_status_bhi2021.csv")) %>%
+  #   dplyr::mutate(dimension = as.character(dimension)) %>%
+  #   dplyr::select(region_id = bhi_id, score, dimension) %>%
+  #   dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
+
 
   ## Trend ----
 
   ## for now have NA carbon storage trends...
   cs_trend <- data.frame(
-    region_id = seq(1, 42, 1),
+    region_id = paste("BHI", stringr::str_pad(c(1:3, 5:43), 3, "left", 0), sep = "-"),
     score = rep(NA, 42)
   )
 
@@ -1748,10 +1812,14 @@ LIV <- function(layers){
   country_employ <- AlignDataYears(layer_nm="le_liv_national_employ", layers_obj=layers) %>%
     select(year = scenario_year, employ_pop, region_id)
 
+  # regional_employ <- read.csv(here::here("index", "layers", "le_liv_regional_employ_bhi2021.csv"))
+  # country_employ <- read.csv(here::here("index", "layers", "le_liv_national_employ_bhi2021.csv"))
+
   liv_data <- full_join(regional_employ, country_employ, by = c("region_id", "year")) %>%
     mutate(bhi_employ_rate = bhi_employ_rate*100) %>%
     rename(country_employ_rate = employ_pop) %>%
     mutate(rgn_country_employ = bhi_employ_rate/country_employ_rate)
+
 
   ## some additional parameters
   rescale_between <- c(1, 0.1)
@@ -1788,6 +1856,7 @@ LIV <- function(layers){
     ) %>%
     ## max rgn:country employ in moving 5year window across all regions
     ## (max of region maximums)
+    # filter(year > min()) %>%
     group_by(year) %>%
     mutate(
       refpthigh = max(refpthigh, na.rm = TRUE),
@@ -1840,12 +1909,18 @@ LIV <- function(layers){
     liv_status %>%
       dplyr::filter(year == scen_year) %>%
       dplyr::select(region_id, score = status) %>%
-      tidyr::complete(region_id = 1:42) %>%
+      tidyr::complete(region_id = paste0(
+        "BHI-",
+        stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
+      )) %>%
       dplyr::mutate(dimension = "status", goal = "LIV", score = score*100),
     ## trend scores
     liv_trend %>%
       dplyr::select(region_id, score = trend) %>%
-      tidyr::complete(region_id = 1:42) %>%
+      tidyr::complete(region_id = paste0(
+        "BHI-",
+        stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
+      )) %>%
       dplyr::mutate(dimension = "trend", goal = "LIV")
   )
 
@@ -1862,25 +1937,56 @@ ECO <- function(layers){
   scen_year <- layers$data$scenario_year
 
 
-  annual_growth_rates <- AlignDataYears(layer_nm="le_eco_bluegrowth_rates", layers_obj=layers) %>%
+  growth_rates <- AlignDataYears(layer_nm="le_eco_bluegrowth_rates", layers_obj=layers) %>%
     select(year = scenario_year, region_id, sector, annual_growth_rate)
-  annual_revenue_estimates <- AlignDataYears(layer_nm="le_eco_yearly_gva", layers_obj=layers) %>%
-    select(year = scenario_year, region_id, sector, gva_sector_prop, country_gva_estim)
+  gva <- AlignDataYears(layer_nm="le_eco_yearly_gva", layers_obj=layers) %>%
+    select(year = scenario_year, region_id, sector, gva_sector_prop, country_blueecon_gva)
 
-  eco_status <- full_join(annual_growth_rates, annual_revenue_estimates, by = c("region_id", "sector", "year")) %>%
+  # growth_rates <- read.csv(here::here("index", "layers", "le_eco_bluegrowth_rates_bhi2021.csv"))
+  # gva <- read.csv(here::here("index", "layers", "le_eco_yearly_gva_bhi2021.csv"))
+
+  eco_status <- full_join(growth_rates, gva, by = c("region_id", "sector", "year")) %>%
+    ## try smoothing growth rate data first with 3-year rolling average
+    arrange(region_id, sector, year) %>%
+    group_by(region_id, sector) %>%
+    mutate(ma3yr = zoo::rollapply(annual_growth_rate, 3, mean, na.rm = TRUE, align = "right", fill = NA)) %>%
+    ungroup() %>%
     mutate(sector_status = case_when(
-      annual_growth_rate <= -1.5 ~ 0,
-      annual_growth_rate > -1.5 & annual_growth_rate < 1.5 ~ 100/3*annual_growth_rate + 50,
-      annual_growth_rate >= -1.5 ~ 100
+      ma3yr <= -1.5 ~ 0,
+      ma3yr > -1.5 & ma3yr < 1.5 ~ 100/3*ma3yr + 50,
+      ma3yr >= -1.5 ~ 100
     )) %>%
+
+    ## calculate status first by sector,
+    ## then average scores across sectors proportional to contribution to marine gva
+    # mutate(sector_status = case_when(
+    #   annual_growth_rate <= -1.5 ~ 0,
+    #   annual_growth_rate > -1.5 & annual_growth_rate < 1.5 ~ 100/3*annual_growth_rate + 50,
+    #   annual_growth_rate >= -1.5 ~ 100
+    # )) %>%
     group_by(region_id, year) %>%
     summarize(status = weighted.mean(sector_status, gva_sector_prop, na.rm = TRUE)) %>%
     ungroup() %>%
     mutate(status = ifelse(is.nan(status), NA, status))
 
 
-  ## can't really say anything about change in annual growth rate, only have one value for AGR...
-  ## but trend also based on growth wouldnt really make sense in relation to the calculated status?
+  ## TREND ----
+
+  trend_years <- (scen_year-4):scen_year
+
+  eco_trend <- eco_status %>%
+    dplyr::group_by(region_id) %>%
+    dplyr::filter(year %in% trend_years) %>%
+    dplyr::do(mdl = lm(status ~ year, data = .)) %>%
+    dplyr::summarize(
+      region_id = region_id,
+      trend = coef(mdl)["year"] * 5
+    ) %>% # trend multiplied by 5 to predict 5 yrs out
+    dplyr::ungroup() %>%
+    dplyr::mutate(trend = round(trend, 2))
+
+
+  ## RETURN SCORES ----
 
   scores <- rbind(
     ## status scores
@@ -1889,10 +1995,9 @@ ECO <- function(layers){
       dplyr::select(region_id, score = status) %>%
       dplyr::mutate(dimension = "status", goal = "ECO"),
     ## trend scores
-    eco_status %>%
-      dplyr::filter(year == scen_year) %>%
-      dplyr::select(region_id, score = status) %>%
-      dplyr::mutate(score = NA, dimension = "trend", goal = "ECO")
+    eco_trend %>%
+      dplyr::select(region_id, score = trend) %>%
+      dplyr::mutate(dimension = "trend", goal = "ECO")
   )
 
   return(scores)
@@ -1961,7 +2066,9 @@ FinalizeScores <- function(layers, conf, scores){
 
   ## For EEZs ----
   scores_eez <- scores %>%
-    dplyr::filter(region_id %in% 1:42) %>%
+    dplyr::filter(region_id %in% paste0(
+      "BHI-", stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
+    )) %>%
 
     ## merge to the area (km2) of each region
     dplyr::left_join(rgns_complete, by = "region_id") %>%
@@ -1978,7 +2085,9 @@ FinalizeScores <- function(layers, conf, scores){
 
   ## For SUBBASINS ----
   scores_subbasin <- scores %>%
-    dplyr::filter(region_id %in% 1:42) %>%
+    dplyr::filter(region_id %in% paste0(
+      "BHI-", stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
+    )) %>%
 
     ## merge to the area (km2) of each region
     dplyr::left_join(rgns_complete, by = "region_id") %>%

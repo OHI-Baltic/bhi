@@ -15,12 +15,17 @@ CS <- function(layers){
     dplyr::filter(scenario_year == scen_year) %>%
     dplyr::select(region_id = rgn_id, score, dimension)
 
+  # cs_status <- read.csv(here::here("index", "layers", "cs_hab_status_bhi2021.csv")) %>%
+  #   dplyr::mutate(dimension = as.character(dimension)) %>%
+  #   dplyr::select(region_id = bhi_id, score, dimension) %>%
+  #   dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
+
 
   ## Trend ----
 
   ## for now have NA carbon storage trends...
   cs_trend <- data.frame(
-    region_id = seq(1, 42, 1),
+    region_id = paste("BHI", stringr::str_pad(c(1:3, 5:43), 3, "left", 0), sep = "-"),
     score = rep(NA, 42)
   )
 

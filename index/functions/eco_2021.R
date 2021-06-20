@@ -17,11 +17,24 @@ ECO <- function(layers){
   # gva <- read.csv(here::here("index", "layers", "le_eco_yearly_gva_bhi2021.csv"))
 
   eco_status <- full_join(growth_rates, gva, by = c("region_id", "sector", "year")) %>%
+    ## try smoothing growth rate data first with 3-year rolling average
+    arrange(region_id, sector, year) %>%
+    group_by(region_id, sector) %>%
+    mutate(ma3yr = zoo::rollapply(annual_growth_rate, 3, mean, na.rm = TRUE, align = "right", fill = NA)) %>%
+    ungroup() %>%
     mutate(sector_status = case_when(
-      annual_growth_rate <= -1.5 ~ 0,
-      annual_growth_rate > -1.5 & annual_growth_rate < 1.5 ~ 100/3*annual_growth_rate + 50,
-      annual_growth_rate >= -1.5 ~ 100
+      ma3yr <= -1.5 ~ 0,
+      ma3yr > -1.5 & ma3yr < 1.5 ~ 100/3*ma3yr + 50,
+      ma3yr >= -1.5 ~ 100
     )) %>%
+
+    ## calculate status first by sector,
+    ## then average scores across sectors proportional to contribution to marine gva
+    # mutate(sector_status = case_when(
+    #   annual_growth_rate <= -1.5 ~ 0,
+    #   annual_growth_rate > -1.5 & annual_growth_rate < 1.5 ~ 100/3*annual_growth_rate + 50,
+    #   annual_growth_rate >= -1.5 ~ 100
+    # )) %>%
     group_by(region_id, year) %>%
     summarize(status = weighted.mean(sector_status, gva_sector_prop, na.rm = TRUE)) %>%
     ungroup() %>%

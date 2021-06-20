@@ -12,9 +12,11 @@ TRA <- function(layers){
 
   tra_status <- ohicore::AlignDataYears(layer_nm="cw_tra_status", layers_obj=layers) %>%
     dplyr::filter(scenario_year == scen_year) %>%
-    dplyr::select(region_id = rgn_id, score)
+    dplyr::mutate(dimension = as.character(dimension)) %>%
+    dplyr::select(region_id = bhi_id, score, dimension) %>%
+    dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
 
-  # tra_status <- read.csv(here::here("index", "layers", "_bhi2021.csv")) %>%
+  # tra_status <- read.csv(here::here("index", "layers", "cw_trash_status_bhi2021.csv")) %>%
   #   dplyr::mutate(dimension = as.character(dimension)) %>%
   #   dplyr::select(region_id = bhi_id, score, dimension) %>%
   #   dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
@@ -24,11 +26,13 @@ TRA <- function(layers){
 
   tra_trend <- ohicore::AlignDataYears(layer_nm="cw_tra_trend_scores", layers_obj=layers) %>%
     dplyr::filter(scenario_year == scen_year) %>%
-    dplyr::select(region_id = rgn_id, score)
+    dplyr::mutate(dimension = "trend") %>%
+    dplyr::select(region_id = bhi_id, score = future_trend, dimension) %>%
+    dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
 
-  # tra_trend <- read.csv(here::here("index", "layers", "_bhi2021.csv")) %>%
-  #   dplyr::mutate(dimension = as.character(dimension)) %>%
-  #   dplyr::select(region_id = bhi_id, score, dimension) %>%
+  # tra_trend <- read.csv(here::here("index", "layers", "cw_trash_trend_bhi2021.csv")) %>%
+  #   dplyr::mutate(dimension = "trend") %>%
+  #   dplyr::select(region_id = bhi_id, score = future_trend, dimension) %>%
   #   dplyr::mutate(region_id = paste("BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"))
 
   ## Return trash status and trend scores ----

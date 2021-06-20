@@ -38,7 +38,9 @@ FinalizeScores <- function(layers, conf, scores){
 
   ## For EEZs ----
   scores_eez <- scores %>%
-    dplyr::filter(region_id %in% 1:42) %>%
+    dplyr::filter(region_id %in% paste0(
+      "BHI-", stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
+    )) %>%
 
     ## merge to the area (km2) of each region
     dplyr::left_join(rgns_complete, by = "region_id") %>%
@@ -55,7 +57,9 @@ FinalizeScores <- function(layers, conf, scores){
 
   ## For SUBBASINS ----
   scores_subbasin <- scores %>%
-    dplyr::filter(region_id %in% 1:42) %>%
+    dplyr::filter(region_id %in% paste0(
+      "BHI-", stringr::str_pad(c(1:3, 5:43), 3, "left", 0)
+    )) %>%
 
     ## merge to the area (km2) of each region
     dplyr::left_join(rgns_complete, by = "region_id") %>%
