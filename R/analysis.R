@@ -244,14 +244,14 @@ map_status_trend <- function(scores, year, goal = "Index", sf_bhirgns){
         aes(fill = trend),
         color = "dimgrey",
         size = 0.1,
-        alpha = 0.4
+        alpha = 0.7
       ) +
       labs(fill = "Trend") +
       scale_fill_gradient2(
         low = "maroon",
         mid = "seashell",
         high = "darkcyan",
-        na.value = "grey"
+        na.value = "dimgrey"
       ) +
       theme_linedraw() +
       theme(legend.position = c(0.1, 0.85))
