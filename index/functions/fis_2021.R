@@ -8,30 +8,30 @@ FIS <- function(layers){
   scen_year <- layers$data$scenario_year
 
 
-  bbmsy <- AlignDataYears(layer_nm="fis_bbmsy", layers_obj=layers) %>%
-    dplyr::mutate(metric="bbmsy")
-  ffmsy <- AlignDataYears(layer_nm="fis_ffmsy", layers_obj=layers) %>%
-    dplyr::mutate(metric="ffmsy")
-
-  catches <- AlignDataYears(layer_nm="fis_catch", layers_obj=layers) %>%
-    select(year = scenario_year, region_id, stock, catch = value)
-
-
-  # bbmsy <- read.csv(here::here("index", "layers", "fis_bbmsy_bhi2021.csv"))
-  # bbmsy <- read.csv(here::here("index", "layers", "fis_bbmsy_2xtrigger_bhi2021.csv"))
-  # ffmsy <- read.csv(here::here("index", "layers", "fis_ffmsy_bhi2021.csv"))
-  # catches <- read.csv(here::here("index", "layers", "fis_catch_bhi2021.csv")) %>%
-  #   select(year, region_id, stock, catch = value)
-  # metric_scores <- rbind(
-  #   mutate(bbmsy, metric = "bbmsy"),
-  #   mutate(ffmsy, metric = "ffmsy")
-  # )
+  bbmsy <- dplyr::bind_rows(
+    ohicore::AlignDataYears(layer_nm="fis_bbmsy", layers_obj=layers) %>%
+      dplyr::select(region_id, stock, value, year = scenario_year),
+    ohicore::AlignDataYears(layer_nm="fis_westcod_bbmsy", layers_obj=layers) %>%
+      dplyr::select(region_id, stock, value, year = scenario_year)
+  )
+  ffmsy <- dplyr::bind_rows(
+    ohicore::AlignDataYears(layer_nm="fis_ffmsy", layers_obj=layers) %>%
+      dplyr::select(region_id, stock, value, year = scenario_year),
+    ohicore::AlignDataYears(layer_nm="fis_westcod_ffmsy", layers_obj=layers) %>%
+      dplyr::select(region_id, stock, value, year = scenario_year)
+  )
+  catches <- dplyr::bind_rows(
+    ohicore::AlignDataYears(layer_nm="fis_catch", layers_obj=layers) %>%
+      dplyr::select(region_id, stock, catch = value, year = scenario_year),
+    ohicore::AlignDataYears(layer_nm="fis_westcod_catch", layers_obj=layers) %>%
+      dplyr::select(region_id, stock, catch = value, year = scenario_year)
+  )
 
 
   ## combine bbmsy and ffmsy into single object
-  metric_scores <- rbind(
-    dplyr::select(bbmsy, -fis_bbmsy_year, -layer_name, year = scenario_year),
-    dplyr::select(ffmsy, -fis_ffmsy_year, -layer_name, year = scenario_year)
+  metric_scores <- dplyr::bind_rows(
+    dplyr::mutate(bbmsy, metric="bbmsy"),
+    dplyr::mutate(ffmsy, metric="ffmsy")
   )
   metric_scores <- metric_scores %>%
     dplyr::mutate(metric = as.factor(metric)) %>%

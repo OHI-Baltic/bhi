@@ -51,7 +51,9 @@ ECO <- function(layers){
       trend = coef(mdl)["year"] * 5
     ) %>% # trend multiplied by 5 to predict 5 yrs out
     dplyr::ungroup() %>%
-    dplyr::mutate(trend = round(trend, 2))
+    dplyr::mutate(trend = round(trend, 2)) %>%
+    ## divide by 100 to make decimal percentage
+    dplyr::mutate(trend = trend/100)
 
 
   ## RETURN SCORES ----

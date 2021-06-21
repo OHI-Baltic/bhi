@@ -187,10 +187,8 @@ EUT <- function(layers){
 
 
   ## Calculate the five contaminants indicators ----
-  # secchi_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_secchi", layers_obj=layers) %>%
-  #   rename(indicator_value = secchi_depth, year = scenario_year) %>%
-  secchi_indicator <- read.csv(here::here("index", "layers", "cw_eut_secchi_bhi2021.csv")) %>%
-    rename(indicator_value = secchi_depth) %>%
+  secchi_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_secchi", layers_obj=layers) %>%
+    select(indicator_value = secchi_depth, year = scenario_year, month, region_id) %>%
     eut_indicators(
       scen_year,
       "secchi",
@@ -202,10 +200,8 @@ EUT <- function(layers){
       no_coastal = TRUE
     )
 
-  # chla_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_chla", layers_obj=layers) %>%
-  #   rename(indicator_value = chla_conc, year = scenario_year) %>%
-  chla_indicator <- read.csv(here::here("index", "layers", "cw_eut_chla_bhi2021.csv")) %>%
-    rename(indicator_value = chla_conc) %>%
+  chla_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_chla", layers_obj=layers) %>%
+    select(indicator_value = chla_conc, year = scenario_year, month, region_id, helcom_id) %>%
     eut_indicators(
       scen_year,
       "chla",
@@ -217,13 +213,9 @@ EUT <- function(layers){
       no_coastal = FALSE
     )
 
-  # din_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_din", layers_obj=layers) %>%
-  #   mutate(winterofyear = ifelse(month == 12, scenario_year, scenario_year-1)) %>%
-  #   rename(indicator_value = din_conc, year = winterofyear) %>%
-  din_indicator <- read.csv(here::here("index", "layers", "cw_eut_din_bhi2021.csv")) %>%
-    mutate(winterofyear = ifelse(month == 12, year, year-1)) %>%
-    select(-year) %>%
-    rename(indicator_value = din_conc, year = winterofyear) %>%
+  din_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_din", layers_obj=layers) %>%
+    mutate(winterofyear = ifelse(month == 12, scenario_year, scenario_year-1)) %>%
+    select(indicator_value = din_conc, year = winterofyear, month, region_id) %>%
     eut_indicators(
       scen_year,
       "din",
@@ -235,13 +227,9 @@ EUT <- function(layers){
       no_coastal = TRUE
     )
 
-  # dip_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_dip", layers_obj=layers) %>%
-  #   mutate(winterofyear = ifelse(month == 12, scenario_year, scenario_year-1)) %>%
-  #   rename(indicator_value = din_conc, year = winterofyear) %>%
-  dip_indicator <- read.csv(here::here("index", "layers", "cw_eut_dip_bhi2021.csv")) %>%
-    mutate(winterofyear = ifelse(month == 12, year, year-1)) %>%
-    select(-year) %>%
-    rename(indicator_value = dip_conc, year = winterofyear) %>%
+  dip_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_dip", layers_obj=layers) %>%
+    mutate(winterofyear = ifelse(month == 12, scenario_year, scenario_year-1)) %>%
+    select(indicator_value = dip_conc, year = winterofyear, month, region_id) %>%
     eut_indicators(
       scen_year,
       "dip",
@@ -253,10 +241,8 @@ EUT <- function(layers){
       no_coastal = TRUE
     )
 
-  # oxyg_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_oxydebt", layers_obj=layers) %>%
-  #   rename(season_mean = oxygendebt, year = scenario_year) %>%
-  oxyg_indicator <-  read.csv(here::here("index", "layers", "cw_eut_oxydebt_bhi2019.csv")) %>%
-    rename(season_mean = oxygendebt) %>%
+  oxyg_indicator <- ohicore::AlignDataYears(layer_nm="cw_eut_oxydebt", layers_obj=layers) %>%
+    select(season_mean = oxygendebt, year = scenario_year, region_id, helcom_id) %>%
     mutate(region_id = paste0("BHI-", stringr::str_pad(region_id, 3, "left", 0))) %>%
     eut_indicators(
       scen_year,
@@ -329,7 +315,11 @@ EUT <- function(layers){
     ## set these region's scores to NA
     mutate(score = ifelse(region_id %in% c("BHI-036", "BHI-043"), NA, score))
 
-  scores <- rbind(eut_status, eut_trend)
+  scores <- rbind(eut_status, eut_trend) %>%
+    ## aland sea, swedish side also should be excluded
+    ## since too few data points once basing status only on the small bhi region
+    ## which excludes rest of aland subbasin...
+    mutate(score = ifelse(region_id == "BHI-035", NA, score))
 
   return(scores)
 

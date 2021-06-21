@@ -135,40 +135,28 @@ CON <- function(layers){
     return(list(indicator = indicator, matrix_scores = matrix_scores))
   }
 
-  yrs <- (scen_year-6):(scen_year-1)
+  yrs <- (scen_year-5):(scen_year)
 
   ## three primary contaminants indicators ----
-
-  # pcb_indicator <- con_indicators(
-  #   read.csv(here::here("index", "layers", "cw_con_pcb_bhi2021.csv")),
-  #   yrs, bio_thresh = 75, sed_thresh = 4.1
-  # )
-  # pfos_indicator <- con_indicators(
-  #   read.csv(here::here("index", "layers", "cw_con_pfos_bhi2021.csv")),
-  #   yrs, bio_thresh = 9.1, sed_thresh = NULL
-  # )
-  # dioxin_indicator <- con_indicators(
-  #   read.csv(here::here("index", "layers", "cw_con_dioxin_bhi2021.csv")),
-  #   yrs, bio_thresh = 6.5, sed_thresh = 0.86
-  # )
-
-
   pcb_indicator <- ohicore::AlignDataYears(layer_nm="cw_con_pcb", layers_obj=layers) %>%
     rename(year = scenario_year) %>%
-    ## don't use archipelago sea data points...
-    filter(region_id != 36) %>%
+    dplyr::mutate(region_id = paste(
+      "BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"
+    )) %>%
     con_indicators(yrs, bio_thresh = 75, sed_thresh = 4.1)
 
   pfos_indicator <- ohicore::AlignDataYears(layer_nm="cw_con_pfos", layers_obj=layers) %>%
     rename(year = scenario_year) %>%
-    ## don't use archipelago sea data points...
-    filter(region_id != 36) %>%
+    dplyr::mutate(region_id = paste(
+      "BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"
+    )) %>%
     con_indicators(yrs, bio_thresh = 9.1, sed_thresh = NULL)
 
   dioxin_indicator <- ohicore::AlignDataYears(layer_nm="cw_con_dioxin", layers_obj=layers) %>%
     rename(year = scenario_year) %>%
-    ## don't use archipelago sea data points...
-    filter(region_id != 36) %>%
+    dplyr::mutate(region_id = paste(
+      "BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"
+    )) %>%
     con_indicators(yrs, bio_thresh = 6.5, sed_thresh = 0.86)
 
   ## save individual indicators as intermediate results
@@ -212,7 +200,12 @@ CON <- function(layers){
   #   tidyr::pivot_wider(names_from = "substance", values_from = "monitored")
 
   concern_subst_layer <- ohicore::AlignDataYears(layer_nm="cw_con_penalty", layers_obj=layers) %>%
-    rename(year = scenario_year) %>%
+    select(year = scenario_year, region_id, monitored, substance) %>%
+    ## BHI region 4 is merged with region 8 in new helcom 2018 subbasins
+    dplyr::mutate(region_id = ifelse(region_id == 4, 8, region_id)) %>%
+    dplyr::group_by(year, region_id, substance) %>%
+    dplyr::summarise(monitored = max(monitored)) %>%
+    dplyr::ungroup() %>%
     ## look at monitoring only within time period of interest
     dplyr::filter(year %in% yrs) %>%
     mutate(substance = paste0(substance, "_monitored")) %>%
@@ -238,7 +231,19 @@ CON <- function(layers){
       proportion_monitored = round(num_monitored/num_substances, 2),
       dimension = "status"
     ) %>%
-    select(region_id, dimension, proportion_monitored)
+    select(region_id, dimension, proportion_monitored) %>%
+    dplyr::mutate(region_id = paste(
+      "BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"
+    ))
+
+  ## BHI 43 is split from region 36 from  BHI 3 on;
+  ## until prop monitored layer is updated, 43 will get same prop monitored  as rgn 36
+  concern_subst_indicator <- bind_rows(
+    concern_subst_indicator,
+    concern_subst_indicator %>%
+      filter(region_id == "BHI-036") %>%
+      mutate(region_id = "BHI-043")
+  )
 
   ## incorporate concerning substances indicator
   cw_con_with_penalty <- cw_con %>%

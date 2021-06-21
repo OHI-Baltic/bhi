@@ -1,51 +1,51 @@
 year,swept,bhi_id,subbasin,rgn_nam,pressure_score
-2016,NA,1,Kattegat,Sweden,0
-2016,NA,2,Kattegat,Denmark,0
-2016,0.004142711,3,Great Belt,Denmark,0.456
-2016,0.268191738,3,Great Belt,Denmark,0.456
-2016,0.033459482,3,Great Belt,Denmark,0.456
-2016,0.193168218,3,Great Belt,Denmark,0.456
-2016,0.638678671,3,Great Belt,Denmark,0.456
-2016,0.596468057,3,Great Belt,Denmark,0.456
-2016,0.547293711,3,Great Belt,Denmark,0.456
-2016,0.257969892,3,Great Belt,Denmark,0.456
-2016,0.110713377,3,Great Belt,Denmark,0.456
-2016,0.004142711,4,Great Belt,Germany,0.004
-2016,NA,5,The Sound,Sweden,0
-2016,NA,6,The Sound,Denmark,0
-2016,NA,7,Kiel Bay,Denmark,0
-2016,NA,8,Kiel Bay,Germany,0
-2016,NA,9,Bay of Mecklenburg,Denmark,0
-2016,NA,10,Bay of Mecklenburg,Germany,0
-2016,NA,11,Arkona Basin,Sweden,0
-2016,NA,12,Arkona Basin,Denmark,0
-2016,NA,13,Arkona Basin,Germany,0
-2016,NA,14,Bornholm Basin,Sweden,0
-2016,NA,15,Bornholm Basin,Denmark,0
-2016,NA,16,Bornholm Basin,Germany,0
-2016,NA,17,Bornholm Basin,Poland,0
-2016,NA,18,Gdansk Basin,Poland,0
-2016,NA,19,Gdansk Basin,Russia,0
-2016,NA,20,Eastern Gotland Basin,Sweden,0
-2016,NA,21,Eastern Gotland Basin,Poland,0
-2016,NA,22,Eastern Gotland Basin,Russia,0
-2016,NA,23,Eastern Gotland Basin,Lithuania,0
-2016,NA,24,Eastern Gotland Basin,Latvia,0
-2016,NA,25,Eastern Gotland Basin,Estonia,0
-2016,NA,26,Western Gotland Basin,Sweden,0
-2016,NA,27,Gulf of Riga,Latvia,0
-2016,NA,28,Gulf of Riga,Estonia,0
-2016,NA,29,Northern Baltic Proper,Sweden,0
-2016,NA,30,Northern Baltic Proper,Finland,0
-2016,NA,31,Northern Baltic Proper,Estonia,0
-2016,NA,32,Gulf of Finland,Finland,0
-2016,NA,33,Gulf of Finland,Russia,0
-2016,NA,34,Gulf of Finland,Estonia,0
-2016,NA,35,Aland Sea,Sweden,0
-2016,NA,36,Aland Sea,Finland,0
-2016,NA,37,Bothnian Sea,Sweden,0
-2016,NA,38,Bothnian Sea,Finland,0
-2016,NA,39,The Quark,Sweden,0
-2016,NA,40,The Quark,Finland,0
-2016,NA,41,Bothnian Bay,Sweden,0
-2016,NA,42,Bothnian Bay,Finland,0
+2016,NA,BHI-042,Bothnian Bay,Finland,0
+2016,NA,BHI-041,Bothnian Bay,Sweden,0
+2016,NA,BHI-040,The Quark,Finland,0
+2016,NA,BHI-039,The Quark,Sweden,0
+2016,NA,BHI-038,Bothnian Sea,Finland,0
+2016,NA,BHI-037,Bothnian Sea,Sweden,0
+2016,NA,BHI-036,Aland Sea,Finland,0
+2016,NA,BHI-035,Aland Sea,Sweden,0
+2016,NA,BHI-034,Gulf of Finland,Estonia,0
+2016,NA,BHI-033,Gulf of Finland,Russia,0
+2016,NA,BHI-032,Gulf of Finland,Finland,0
+2016,NA,BHI-031,Northern Baltic Proper,Estonia,0
+2016,NA,BHI-030,Northern Baltic Proper,Finland,0
+2016,NA,BHI-029,Northern Baltic Proper,Sweden,0
+2016,NA,BHI-028,Gulf of Riga,Estonia,0
+2016,NA,BHI-027,Gulf of Riga,Latvia,0
+2016,NA,BHI-026,Western Gotland Basin,Sweden,0
+2016,NA,BHI-025,Eastern Gotland Basin,Estonia,0
+2016,NA,BHI-024,Eastern Gotland Basin,Latvia,0
+2016,NA,BHI-023,Eastern Gotland Basin,Lithuania,0
+2016,NA,BHI-022,Eastern Gotland Basin,Russia,0
+2016,NA,BHI-021,Eastern Gotland Basin,Poland,0
+2016,NA,BHI-020,Eastern Gotland Basin,Sweden,0
+2016,NA,BHI-019,Gdansk Basin,Russia,0
+2016,NA,BHI-018,Gdansk Basin,Poland,0
+2016,NA,BHI-017,Bornholm Basin,Poland,0
+2016,NA,BHI-016,Bornholm Basin,Germany,0
+2016,NA,BHI-015,Bornholm Basin,Denmark,0
+2016,NA,BHI-014,Bornholm Basin,Sweden,0
+2016,NA,BHI-013,Arkona Basin,Germany,0
+2016,NA,BHI-012,Arkona Basin,Denmark,0
+2016,NA,BHI-011,Arkona Basin,Sweden,0
+2016,NA,BHI-010,Bay of Mecklenburg,Germany,0
+2016,NA,BHI-009,Bay of Mecklenburg,Denmark,0
+2016,NA,BHI-008,Kiel Bay,Germany,0
+2016,NA,BHI-007,Kiel Bay,Denmark,0
+2016,NA,BHI-006,The Sound,Denmark,0
+2016,NA,BHI-005,The Sound,Sweden,0
+2016,0.004142711,BHI-004,Great Belt,Germany,0.004
+2016,0.004142711,BHI-003,Great Belt,Denmark,0.456
+2016,0.268191738,BHI-003,Great Belt,Denmark,0.456
+2016,0.033459482,BHI-003,Great Belt,Denmark,0.456
+2016,0.193168218,BHI-003,Great Belt,Denmark,0.456
+2016,0.638678671,BHI-003,Great Belt,Denmark,0.456
+2016,0.596468057,BHI-003,Great Belt,Denmark,0.456
+2016,0.547293711,BHI-003,Great Belt,Denmark,0.456
+2016,0.257969892,BHI-003,Great Belt,Denmark,0.456
+2016,0.110713377,BHI-003,Great Belt,Denmark,0.456
+2016,NA,BHI-002,Kattegat,Denmark,0
+2016,NA,BHI-001,Kattegat,Sweden,0

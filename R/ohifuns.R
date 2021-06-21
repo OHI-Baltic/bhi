@@ -1,4 +1,7 @@
-CalculateAll = function(conf, layers){
+CalculateAll <- function(conf, layers){
+
+
+  ## Before Calculating ----
 
   ## Remove global scores
   if (exists('scores', envir=.GlobalEnv)) rm(scores, envir=.GlobalEnv)
@@ -9,18 +12,21 @@ CalculateAll = function(conf, layers){
     conf$functions$Setup()
   }
 
+  ## Status and Trend ----
+
   ## Access Pre-Index functions: Status and Trend, by goal
-  goals_X = conf$goals %>%
-    # dplyr::filter(!is.na(preindex_function)) %>% # it it realizes it's NA
+  goals_X <- conf$goals %>%
+    # dplyr::filter(!is.na(preindex_function)) %>% # if it realizes it's NA
     dplyr::filter(preindex_function != "NA") %>% # if it thinks NA is a character string
     dplyr::arrange(order_calculate)
 
   ## Setup scores variable; many rbinds to follow
-  scores = data.frame(
-    goal      = character(0),
+  scores <- data.frame(
+    goal = character(0),
     dimension = character(0),
     region_id = integer(0),
-    score     = numeric())
+    score = numeric()
+  )
 
   ## Calculate Status and Trend, all goals
   for (i in 1:nrow(goals_X)){ # i=14
@@ -59,6 +65,8 @@ CalculateAll = function(conf, layers){
     }
   }
 
+  ## Pressures & Resilience ----
+
   ## Calculate Pressures, all goals
   #  layers = Layers(layers.csv = 'layers.csv', layers.dir = 'layers')
   scores_P = CalculatePressuresAll(layers, conf)
@@ -68,6 +76,9 @@ CalculateAll = function(conf, layers){
   scores_R = CalculateResilienceAll(layers, conf, scores)
   scores = rbind(scores, scores_R)
   scores = data.frame(scores)
+
+
+  ## Index ----
 
   ## Calculate Goal Score and Likely Future, all goals
   goals_G = as.character(unique(subset(scores, dimension=='status', goal, drop=T)))
@@ -90,7 +101,7 @@ CalculateAll = function(conf, layers){
     ## Calculations and Scaling
     x = CalculateGoalIndex(
       id         = v$region_id,
-      status     = pmin(v$status/100, 1), # weird thing where ECO status is 1 and gets 'out of bounds' warning...
+      status     = pmin(v$status/100, 1),
       trend      = v$trend,
       resilience = v$resilience/100,
       pressure   = v$pressures/100,
@@ -102,9 +113,7 @@ CalculateAll = function(conf, layers){
 
     ## Gather to scores format: goal, dimension, region_id, score
     scores_G = x %>%
-      dplyr::select(region_id = id,
-                    future    = xF,
-                    score) %>%
+      dplyr::select(region_id = id, future = xF, score) %>%
       tidyr::gather(dimension, score, -region_id) %>%
       dplyr::mutate(goal = g) %>%
       dplyr::select(goal, dimension, region_id, score)
@@ -113,6 +122,8 @@ CalculateAll = function(conf, layers){
     scores = rbind(scores, scores_G)
   }
 
+
+  ## Supragoals ----
 
   ## Post-Index functions: Calculate Status, Trend, Likely Future State and Scores for 'Supragoals'
   # goals_Y = subset(conf$goals, !is.na(postindex_function))
@@ -136,72 +147,43 @@ CalculateAll = function(conf, layers){
   cat(sprintf('Calculating Index Score for each region using goal weights to combine goal scores...\n'))
 
   # calculate weighted-mean Index scores from goal scores and rbind to 'scores' variable
-  scores =
-    rbind(scores,
-          scores %>%
+  scores <- rbind(
+    scores,
+    scores %>%
+      # filter only supragoal scores, merge with supragoal weightings
+      dplyr::filter(dimension=='score',  goal %in% supragoals) %>%
+      merge(dplyr::select(conf$goals, goal, weight)) %>%
+      dplyr::mutate(weight = as.numeric(weight)) %>%
 
-            # filter only supragoal scores, merge with supragoal weightings
-            dplyr::filter(dimension=='score',  goal %in% supragoals) %>%
-            merge(conf$goals %>%
-                    dplyr::select(goal, weight)) %>%
-            dplyr::mutate(weight = as.numeric(weight)) %>%
-
-            # calculate the weighted mean of supragoals, add goal and dimension column
-            dplyr::group_by(region_id) %>%
-            dplyr::summarise(score = weighted.mean(score, weight, na.rm=T)) %>%
-            dplyr::mutate(goal      = 'Index',
-                          dimension = 'score') %>%
-            data.frame())
+      # calculate the weighted mean of supragoals, add goal and dimension column
+      dplyr::group_by(region_id) %>%
+      dplyr::summarise(score = weighted.mean(score, weight, na.rm=T)) %>%
+      dplyr::mutate(goal = 'Index', dimension = 'score') %>%
+      data.frame()
+  )
 
 
+  ## Likely Future State ----
   ## Calculate Overall Index Likely Future State for each region
   cat(sprintf('Calculating Index Likely Future State for each region...\n'))
 
   # calculate weighted-mean Likely Future State scores and rbind to 'scores' variable
-  scores =
-    rbind(scores,
-          scores %>%
-
-            # filter only supragoal scores, merge with supragoal weightings
-            dplyr::filter(dimension=='future',  goal %in% supragoals) %>%
-            merge(conf$goals %>%
-                    dplyr::select(goal, weight)) %>%
-
-            # calculate the weighted mean of supragoals, add goal and dimension column
-            dplyr::group_by(region_id) %>%
-            dplyr::summarise(score = weighted.mean(score, weight, na.rm=T)) %>%
-            dplyr::mutate(goal      = 'Index',
-                          dimension = 'future') %>%
-            data.frame())
-
-  ## Post-process scores, but pre-global calculation: for global assessment only
-  if ('PreGlobalScores' %in% ls(conf$functions)){
-    cat(sprintf('Calculating Post-process PreGlobalScores() function for each region...\n'))
-    scores = conf$functions$PreGlobalScores(layers, conf, scores)
-  }
-
-  ## Assessment Areas (sometimes known as 'global', region_id-0) scores by area weighting
-  cat(sprintf('Calculating scores for ASSESSMENT AREA (region_id=0) by area weighting...\n'))
-
-  ## Calculate area-weighted Assessment Area scores and rbind to all scores
-  scores = rbind(
+  scores <- rbind(
     scores,
     scores %>%
+      # filter only supragoal scores, merge with supragoal weightings
+      dplyr::filter(dimension=='future',  goal %in% supragoals) %>%
+      merge(dplyr::select(conf$goals, goal, weight)) %>%
+      # calculate the weighted mean of supragoals, add goal and dimension column
+      dplyr::group_by(region_id) %>%
+      dplyr::summarise(score = weighted.mean(score, weight, na.rm=T)) %>%
+      dplyr::mutate(goal = 'Index', dimension = 'future') %>%
+      data.frame()
+  )
 
-      # filter only score, status, future dimensions, merge to the area (km2) of each region
-      # dplyr::filter(dimension %in% c('score','status','future')) %>%
-      merge(ohicore::SelectLayersData(layers, layers=conf$config$layer_region_areas, narrow=T) %>%
-              dplyr::select(region_id = id_num,
-                            area      = val_num)) %>%
-
-      # calculate weighted mean by area
-      dplyr::group_by(goal, dimension) %>%
-      dplyr::summarise(score = weighted.mean(score, area, na.rm=T),
-                       region_id = 0) %>%
-      ungroup())
-
+  ## Finalize Scores ----
   ## post-process
-  if ('FinalizeScores' %in% ls(conf$functions)){
+  if('FinalizeScores' %in% ls(conf$functions)){
     cat(sprintf('Calculating FinalizeScores function...\n'))
     scores = conf$functions$FinalizeScores(layers, conf, scores)
   }
@@ -258,10 +240,10 @@ CalculatePressuresAll <- function(layers, conf) {
 
   ### error if pressure categories deviate from "ecological" and "social"
   check <- setdiff(c("ecological", "social"), unique(p_categories$category))
-  if (length(check) > 0){
-    stop(sprintf('In pressures_categories.csv, the "category" variable does not include %s',
-                 paste(check, collapse = ', ')))
-  }
+  # if (length(check) > 0){
+  #   stop(sprintf('In pressures_categories.csv, the "category" variable does not include %s',
+  #                paste(check, collapse = ', ')))
+  # }
 
   check <- setdiff(unique(p_categories$category), c("ecological", "social"))
   if (length(check) > 0) {
@@ -314,10 +296,12 @@ CalculatePressuresAll <- function(layers, conf) {
 
 
   ### setup initial data.frame for column binding results by region
-  regions_dataframe <- ohicore::SelectLayersData(layers,
-                                                 layers = conf$config$layer_region_labels,
-                                                 narrow = TRUE) %>%
-    dplyr::select(region_id = id_num)
+  regions_dataframe <- ohicore::SelectLayersData(
+    layers,
+    layers = conf$config$layer_region_labels,
+    narrow = TRUE
+    ) %>%
+    dplyr::select(region_id = id_chr)
   regions_vector <- regions_dataframe[['region_id']]
 
 
@@ -369,11 +353,8 @@ CalculatePressuresAll <- function(layers, conf) {
 
 
   p_rgn_layers_data <- p_rgn_layers_data  %>%
-    dplyr::filter(id_num %in% regions_vector) %>%
-    dplyr::select(region_id = id_num,
-                  year,
-                  val_num,
-                  layer) %>%
+    dplyr::filter(id_chr %in% regions_vector) %>%
+    dplyr::select(region_id = id_chr, year, val_num, layer) %>%
     dplyr::filter(!is.na(val_num)) %>%
     dplyr::mutate(year = ifelse(is.na(year), 20100, year))
 
@@ -502,6 +483,7 @@ CalculatePressuresAll <- function(layers, conf) {
 
   ### return scores
   scores <- regions_dataframe %>%
+    dplyr::mutate(region_id = as.character(region_id)) %>%
     dplyr::left_join(calc_pressure, by = "region_id") %>%
     dplyr::mutate(dimension = "pressures") %>%
     dplyr::select(goal, dimension, region_id, score = pressure) %>%
@@ -511,7 +493,7 @@ CalculatePressuresAll <- function(layers, conf) {
 
 }
 
-CalculateResilienceAll = function(layers, conf, scores){
+CalculateResilienceAll <- function(layers, conf, scores){
 
   # reporting 1
   cat(sprintf('Calculating Resilience for each region...\n'))
@@ -593,7 +575,8 @@ CalculateResilienceAll = function(layers, conf, scores){
 
   ## setup initial data.frame for column binding results by region
   regions_dataframe = ohicore::SelectLayersData(layers, layers=conf$config$layer_region_labels, narrow=T) %>%
-    dplyr::select(region_id = id_num)
+    dplyr::select(region_id = id_chr) %>%
+    dplyr::mutate(region_id = as.character(region_id))
   regions_vector = regions_dataframe[['region_id']]
 
   ## create the weighting scheme
@@ -616,8 +599,8 @@ CalculateResilienceAll = function(layers, conf, scores){
     if(length(layers_no_years) > 0){
 
       layers_no_years_df <- data.frame(layer_name=layers_no_years,
-                                       scenario_year = 20100,  # creating a fake variable to match up here
-                                       data_year = 20100)
+                                       scenario_year = 99999,  # creating a fake variable to match up here
+                                       data_year = 99999)
       scenario_data_year <- rbind(scenario_data_year, layers_no_years_df)
     }
 
@@ -640,9 +623,9 @@ CalculateResilienceAll = function(layers, conf, scores){
         val_num = score/100, id_name = "region_id", year = 2019,
         layer = "res_biodiversity",
         val_name = "resilience_score", category_name = NA,
-        flds = "id_num | year | val_num"
+        flds = "id_chr | year | val_num"
       ) %>%
-      select(id_num = region_id, val_num, year, layer, id_name, val_name, category_name, flds)
+      select(id_chr = region_id, val_num, year, layer, id_name, val_name, category_name, flds)
   )
 
   if(length(which(names(r_rgn_layers_data)=="year"))==0){
@@ -650,13 +633,10 @@ CalculateResilienceAll = function(layers, conf, scores){
   }
 
   r_rgn_layers_data <- r_rgn_layers_data  %>%
-    dplyr::filter(id_num %in% regions_vector) %>%
-    dplyr::select(region_id = id_num,
-                  year,
-                  val_num,
-                  layer) %>%
+    dplyr::filter(id_chr %in% regions_vector) %>%
+    dplyr::select(region_id = id_chr, year, val_num, layer) %>%
     dplyr::filter(!is.na(val_num)) %>%
-    dplyr::mutate(year = ifelse(is.na(year), 20100, year))
+    dplyr::mutate(year = ifelse(is.na(year), 99999, year))
 
   r_rgn_layers <- scenario_data_year %>%
     dplyr::mutate(year = as.integer(year)) %>%
@@ -760,15 +740,19 @@ CalculateResilienceAll = function(layers, conf, scores){
 
 }
 
-CalculateGoalIndex <- function(id, status, trend, resilience, pressure,
-                               DISCOUNT = 1.0, BETA = 0.67, default_trend = 0.0, xlim = c(0, 1)) {
+CalculateGoalIndex <- function(
+  id, status, trend, resilience, pressure,
+  DISCOUNT = 1.0, BETA = 0.67, default_trend = 0.0, xlim = c(0, 1)
+) {
 
   # verify parameters
   #if (getOption('debug', FALSE)) {
-  if(!(BETA >= 0 && BETA <= 1))
+  if(!(BETA >= 0 && BETA <= 1)){
     stop('Beta parameter must be between 0 and 1; check it in config.R')
-  if(!DISCOUNT >= 0)
+  }
+  if(!DISCOUNT >= 0){
     stop('Discount parameter must be greater than 0 (1.0 = no discounting); check it in config.R')
+  }
   #}
 
   # Simplify symbols based on math writeup
@@ -780,13 +764,16 @@ CalculateGoalIndex <- function(id, status, trend, resilience, pressure,
   }
 
   # enforce domains if not all NAs
-  if(!all(is.na(d$x)) && !(min(d$x, na.rm = T) >= 0  && max(d$x, na.rm = T) <= xlim[2]))
+  if(!all(is.na(d$x)) && !(min(d$x, na.rm = T) >= 0  && max(d$x, na.rm = T) <= xlim[2])){
     stop('one or more status scores exceed bounds of 0 to ', xlim[2])
+  }
   # if(!(min(d$t, na.rm = T) >= -1 && max(d$t, na.rm = T) <= 1))
-  if(!all(is.na(d$x)) && !(min(d$t, na.rm = T) >= -1 && max(d$t, na.rm = T) <= 1))
+  if(!all(is.na(d$x)) && !(min(d$t, na.rm = T) >= -1 && max(d$t, na.rm = T) <= 1)){
     stop('one or more trend scores exceed bounds of -1 to +1')
-  if(!all(is.na(d$x)) && !(min(d$r, na.rm = T) >= 0  && max(d$r, na.rm = T) <= xlim[2]))
+  }
+  if(!all(is.na(d$x)) && !(min(d$r, na.rm = T) >= 0  && max(d$r, na.rm = T) <= xlim[2])){
     stop('one or more resilience scores exceed bounds of 0 to ', xlim[2])
+  }
   # if(!(min(d$p, na.rm = T) >= 0  && max(d$p, na.rm = T) <= xlim[2]))
 
   ## manage when resilience or pressure is NA

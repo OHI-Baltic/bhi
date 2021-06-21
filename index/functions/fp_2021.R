@@ -8,11 +8,22 @@ FP <- function(layers, scores){
   scen_year <- layers$data$scenario_year
 
   ## layers needed: fisheries landings and mariculture harvest ----
-  mar_harvest_tonnes <- AlignDataYears(layer_nm="mar_harvest", layers_obj=layers) %>%
-    select(year = scenario_year, region_id, produced_tonnes)
-
-  fis_catch <- AlignDataYears(layer_nm="fis_catch", layers_obj=layers) %>%
-    select(year = scenario_year, region_id, stock, value)
+  mar_harvest_tonnes <- ohicore::AlignDataYears(layer_nm="mar_harvest", layers_obj=layers) %>%
+    dplyr::select(year = scenario_year, region_id, produced_tonnes) %>%
+    dplyr::mutate(region_id = ifelse(region_id == 4, 8, region_id)) %>%
+    dplyr::group_by(region_id, year) %>%
+    ## add harvest tonnes from region 4 to region 8
+    dplyr::summarize(produced_tonnes = sum(produced_tonnes)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(region_id = paste(
+      "BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"
+    ))
+  fis_catch <- dplyr::bind_rows(
+    ohicore::AlignDataYears(layer_nm="fis_catch", layers_obj=layers) %>%
+      dplyr::select(region_id, stock, value, year = scenario_year),
+    ohicore::AlignDataYears(layer_nm="fis_westcod_catch", layers_obj=layers) %>%
+      dplyr::select(region_id, stock, value, year = scenario_year)
+  )
 
 
   ## wrangle and join mar and fis data ----
@@ -21,20 +32,20 @@ FP <- function(layers, scores){
   ## in fis data prep the ICES assessment area values were assigned to each bhi region,
   ## because fis goal uses ratios not values
   fis_catch <- read.csv(file.path(dir_assess, "layers", "rgns_complete.csv")) %>%
-    select(region_id, region_name, region_area_km2) %>%
-    right_join(fis_catch, by = "region_id") %>%
-    group_by(year, stock) %>%
-    mutate(stock_assess_area = sum(region_area_km2)) %>%
-    ungroup() %>%
-    mutate(rgn_catch = value*(region_area_km2/stock_assess_area))
+    dplyr::select(region_id, region_name, region_area_km2) %>%
+    dplyr::right_join(fis_catch, by = "region_id") %>%
+    dplyr::group_by(year, stock) %>%
+    dplyr::mutate(stock_assess_area = sum(region_area_km2)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(rgn_catch = value*(region_area_km2/stock_assess_area))
 
 
   fp_data <- fis_catch %>%
-    select(region_id, region_name, year, stock, rgn_catch) %>%
-    group_by(region_id, region_name, year) %>%
-    summarize(rgn_catch = sum(rgn_catch)) %>%
-    ungroup() %>%
-    left_join(mar_harvest_tonnes, by = c("year", "region_id"))
+    dplyr::select(region_id, region_name, year, stock, rgn_catch) %>%
+    dplyr::group_by(region_id, region_name, year) %>%
+    dplyr::summarize(rgn_catch = sum(rgn_catch)) %>%
+    dplyr::ungroup() %>%
+    dplyr::left_join(mar_harvest_tonnes, by = c("year", "region_id"))
 
 
   ## calculate ratio of wildcaught fisheries to mariculture harvest ----
@@ -60,6 +71,13 @@ FP <- function(layers, scores){
       ratio1991, prop_wildcaught)
     ) %>%
     select(region_id, year, prop_wildcaught)
+
+  ## assign bhi region 43 same proportion as region 36
+  ## because when mar data was created, they were both within  the same BHI region
+  fp_weights <- fp_weights %>%
+    dplyr::filter(region_id == "BHI-036") %>%
+    dplyr::mutate(region_id = "BHI-043") %>%
+    dplyr::bind_rows(filter(fp_weights, region_id != "BHI-043"))
 
   ## save ratio of fis vs mar production as intermediate result
   write_csv(
@@ -99,19 +117,20 @@ FP <- function(layers, scores){
     ))
   }
 
-  tmp <- fp_scores %>%
-    dplyr::filter(
-      goal == "MAR" &
-        is.na(score) &
-        dimension == "score" &
-        (!is.na(1- weight) & (1- weight) != 0)
-    )
-  if(dim(tmp)[1] > 0){
-    warning(sprintf(
-      "Check: these regions have a MAR weight but no score: %s",
-      paste(as.character(tmp$region_id), collapse = ", ")
-    ))
-  }
+  ## all MAR regions will have no scores; still havent finished developing goal model etc
+  # tmp <- fp_scores %>%
+  #   dplyr::filter(
+  #     goal == "MAR" &
+  #       is.na(score) &
+  #       dimension == "score" &
+  #       (!is.na(1- weight) & (1- weight) != 0)
+  #   )
+  # if(dim(tmp)[1] > 0){
+  #   warning(sprintf(
+  #     "Check: these regions have a MAR weight but no score: %s",
+  #     paste(as.character(tmp$region_id), collapse = ", ")
+  #   ))
+  # }
 
   ## there is a score, but weight is NA or 0
   tmp <- fp_scores %>%

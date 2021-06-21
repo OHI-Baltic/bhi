@@ -51,25 +51,25 @@ BD <- function(layers){
 
   bd_all_data <- bind_rows(
     ## benthic habitat
-    AlignDataYears(layer_nm="bd_hab_benthic", layers_obj=layers) %>%
+    ohicore::AlignDataYears(layer_nm="bd_hab_benthic", layers_obj=layers) %>%
       filter(scenario_year == scen_year) %>%
       mutate(coastal = str_detect(helcom_id, "^SEA")) %>%
       select(region_id, coastal, BQR, area_km2) %>%
       mutate(indicator = "hab_benthic"),
     ## pelagic habitat
-    AlignDataYears(layer_nm="bd_hab_pelagic", layers_obj=layers) %>%
+    ohicore::AlignDataYears(layer_nm="bd_hab_pelagic", layers_obj=layers) %>%
       filter(scenario_year == scen_year) %>%
       mutate(coastal = str_detect(helcom_id, "^SEA")) %>%
       select(region_id, coastal, BQR, area_km2) %>%
       mutate(indicator = "hab_pelagic"),
     ## fishes
-    AlignDataYears(layer_nm="bd_spp_fish", layers_obj=layers) %>%
+    ohicore::AlignDataYears(layer_nm="bd_spp_fish", layers_obj=layers) %>%
       filter(scenario_year == scen_year) %>%
       mutate(coastal = str_detect(helcom_id, "^SEA")) %>%
       select(region_id, coastal, BQR, area_km2) %>%
       mutate(indicator = "spp_fishes"),
     ## seals
-    AlignDataYears(layer_nm="bd_spp_seals", layers_obj=layers) %>%
+    ohicore::AlignDataYears(layer_nm="bd_spp_seals", layers_obj=layers) %>%
       filter(scenario_year == scen_year) %>%
       mutate(coastal = str_detect(helcom_id, "^SEA")) %>%
       select(region_id, coastal, BQR, area_km2) %>%
@@ -143,10 +143,13 @@ BD <- function(layers){
 
   ## Trend ----
 
-  bd_trend <- AlignDataYears(layer_nm="bd_spp_trend", layers_obj=layers) %>%
+  bd_trend <- ohicore::AlignDataYears(layer_nm="bd_spp_trend", layers_obj=layers) %>%
     filter(scenario_year == scen_year) %>%
     select(region_id, score) %>%
-    mutate(score = round(score, 3))
+    mutate(score = round(score, 3)) %>%
+    dplyr::mutate(region_id = paste(
+      "BHI", stringr::str_pad(region_id, 3, "left", 0), sep = "-"
+    ))
 
 
   ## Return biodiversity status and trend scores ----

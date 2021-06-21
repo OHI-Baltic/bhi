@@ -1,7 +1,3 @@
-## Libraries
-source(here::here("R", "setup.R"))
-
-
 ## Functions
 
 #' list functions.R goals

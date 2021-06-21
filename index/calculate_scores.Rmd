@@ -33,8 +33,12 @@ devtools::install_github("ohi-science/ohicore")
 Run these every time you calculate scores so that you will have libraries available to you. This is like turning on the lights in a building. Additionally, you will set the working directory to your scenario folder.
 
 ```{r setup, eval=FALSE}
+source(here::here("R", "setup.R"))
+source(here::here("R", "reconfiguring.R"))
+source(here::here("R", "common.R"))
+
 ## SET BHI ASSESSMENT DIRECTORY HERE
-dir_assess <- here::here("baltic2019draft")
+dir_assess <- here::here("index")
 setwd(dir_assess)
 
 ## at this point, double check that all bhi-prep changes have been pushed to github!
@@ -44,14 +48,11 @@ setwd(dir_assess)
 
 ## Configure Toolbox
 
-At this point, double check that all changes in the data preparationhave been pushed to github, and that files layers.csv are the ones we want for calculating scores!
+At this point, double check that all changes in the data preparation have been pushed to github, and that files layers.csv are the ones we want for calculating scores!
 
 Then, run these chunks to ensure that all layer files in the `bhi` repo are up-to-date, versions of goal functions to be used in the assessment are configured, and scenario-data years are registered for all the layers.
 
 ```{r configure layers, eval=FALSE}
-source(here::here("R", "reconfiguring.R"))
-source(here::here("R", "common.R"))
-
 ## use semicolon_to_comma to remove extra NA rows in the file if they exist
 ## check before copying layers that layers.csv filenames and info are all correct and complete
 # lyrs <- semicolon_to_comma(file.path(dir_assess, "layers.csv"))
@@ -68,12 +69,12 @@ copy_lyrs_from_bhiprep(dir_assess, copy_layers = list(lyrs$filename))
 
 ```{r configure functions, eval=FALSE}
 funs <- c(
-  "fis_2019.R", "mar_2019.R", 
-  "fp_2019.R", "np_2019.R", "ao_2019.R",
-  "bd_2019.R", "ico_2019.R", "lsp_2019.R", "sp_2019.R", 
-  "con_2019.R", "eut_2019.R", "tra_2019.R", "cw_2019.R",
-  "tr_2019.R", "cs_2019.R",
-  "liv_2019.R", "eco_2019.R", "le_2019.R",
+  "fis_2021.R", "mar_2021.R", 
+  "fp_2021.R", "np_2021.R", "ao_2021.R",
+  "bd_2021.R", "ico_2021.R", "lsp_2021.R", "sp_2021.R", 
+  "con_2021.R", "eut_2021.R", "tra_2021.R", "cw_2021.R",
+  "tr_2021.R", "cs_2021.R",
+  "liv_2021.R", "eco_2021.R", "le_2021.R",
   "finalize_scores.R"
 )
 configure_functions(dir_assess, test_funs_list = funs)
@@ -82,7 +83,7 @@ configure_functions(dir_assess, test_funs_list = funs)
 ```{r configure scenario data years, eval=FALSE}
 ## will use ohi layers object to check data years in layers
 layers <- ohicore::Layers("layers.csv", "layers")
-include_scenario_years <- 2005:2019
+include_scenario_years <- 2010:2020
 
 ## run this to revise the scenario_data_years.csv, or change manually e.g. using execl
 scenario_data_years <- file.path(dir_assess, "conf", "scenario_data_years.csv") %>% 
@@ -123,17 +124,6 @@ write_csv(updated, file.path(dir_assess, "conf", "scenario_data_years.csv"))
 Run this chunk to calculate and save scores as `scores` object and as `scores.csv`. Functions from ohicore (`ohicore::`) will check your repo's files to make sure you have registered layers properly, etc. It will create `conf` and `layers` objects that will be used to calculate scores, based on current `functions.R`, `layers.csv`, etc. These functions will not modify layers files.
 
 ```{r calculate scores, eval=FALSE}
-## often we use excel to edit these files, 
-## so, for ohicore funcs etc may need to confirm they are comma delim. not semicolons
-# lapply(
-#   list(
-#     file.path(dir_assess, "layers.csv"),
-#     file.path(dir_assess, "conf", "scenario_data_years.csv")
-#   ),
-#   function(x){semicolon_to_comma(x, remove_na_cols = TRUE, overwrite = TRUE)}
-# )
-
-
 ## load scenario configuration, 
 ## and make sure have numeric not character types in some columns...
 conf <- ohicore::Conf("conf")
@@ -150,11 +140,11 @@ layers <- ohicore::Layers("layers.csv", "layers")
 
 ## calculate scores for all scenario years and save as scores.csv
 source(here::here("R", "ohifuns.R"))
-layers$data$scenario_year <- 2019
+layers$data$scenario_year <- 2020
 scorelist <- CalculateAll(conf, layers)
 
 ## scenario years for which to calculate scores in this assessment
-scenario_years <- 2019
+scenario_years <- 2020
 
 scorelist <- do.call(rbind, lapply(scenario_years, function(yr){
   layers$data$scenario_year <- yr

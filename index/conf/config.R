@@ -19,7 +19,6 @@ layer_region_areas <- "rgns_complete"
 resilience_element <- NULL # for BHI no goals have elements currently
 pressures_element <- NULL # for BHI no goals have elements currently
 
-
 ## constants for dimensions' relative importance ----
 ## used by ohicore::Calculate functions to calculate pressures/resilience/trend/likely future state
 
@@ -43,7 +42,7 @@ default_trend <- 0
 ## descriptions and metadata ----
 
 ## extra descriptions not covered by goals.description or layers.description
-index_description <- "The overall Index represents the weighted average of all goal scores."
-dims_tab <- tbl(bhi_db_con, "dim_descriptions") %>% collect()
-dimension_descriptions <- dims_tab$description
-names(dimension_descriptions) <- dims_tab$dimension
+# index_description <- "The overall Index represents the weighted average of all goal scores."
+# dims_tab <- tbl(bhi_db_con, "dim_descriptions") %>% collect()
+# dimension_descriptions <- dims_tab$description
+# names(dimension_descriptions) <- dims_tab$dimension
