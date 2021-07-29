@@ -106,7 +106,7 @@ FinalizeScores <- function(layers, conf, scores){
 
 
   ## Add NAs to missing combos of region_id, goal, dimension ----
-  allrgns <- paste0("BHI-", c(stringr::str_pad(c(0:3, 5:43), 3, "left", 0), 301:309, 501:517))
+  allrgns <- paste0("BHI-", c(stringr::str_pad(c(0:3, 5:43), 3, "left", 0), 301:309, 501:518))
   explst <- list(
     region_id = allrgns,
     dimension = c("pressures", "resilience", "status", "trend", "future", "score"),
