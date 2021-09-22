@@ -1,3 +1,9 @@
+/*------------- Whole Document---------------- */
+
+@import url('https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700&display=swap');
+
+/*------------- Navbar Formatting ---------------- */
+
 .navbar {
     font-size: 18px;
     min-height: 48px;
@@ -7,59 +13,17 @@
     background-color: #0a1721;
 }
 
-.navbar-inverse .navbar-nav>li>a {
-    color: #f3ffe1;
-    min-height: 48px;
-}
 
 body {
-    color: #2a3848;
-    text-align: left;
-    background-color: #f3f6f9;
-}
-
-.main-container {
-    max-width: 1150px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.title {
-    font-size: 45px;
-    margin-top: 45px;
-    margin-bottom: 12px;
-}
-
-@media (min-width: 1040px) {
-    .col-md-9 {
-        float: left;
-        width: 67%;
-    }
-}
-
-.tocify {
-    border: 0.5px solid #80b7b0;
-    width: 100%;
-    position: fixed;
-    float: right;
-}
-
-.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
-    z-index: 2;
-    color: #ffffff;
-    background-color: #006687;
-    border-color: #80b6b0;
-}
-
-.tocify .tocify-item a, .tocify .list-group-item {
-    padding: 4px;
-}
-
-.tocify-header {
-    text-indent: 0px;
-}
-
-.list-group {
-    font-size: 10px;
-    font-weight: 500;
+  /* add background image */
+  background-image: url('https://images.unsplash.com/photo-1534143340226-6cbc7628dbe5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1064&q=80');
+  background-repeat: no-repeat;
+  /* fixed background image */
+  background-attachment: fixed;
+  background-size: 100%;
+  /* make background image transparent */
+  background-blend-mode: lighten;
+  background-color: rgba(255,255,255,0.1);
+  /* color of font, and indent from edges of container */
+  margin: 10px 15px 10.5px;
 }

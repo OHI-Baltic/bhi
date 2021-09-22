@@ -1,0 +1,43 @@
+---
+output:
+  html_document:
+    fig_width: 1
+    toc: false
+    css: css/extra.css
+---
+
+<div class="wrap page-lead-content" style="background-color:#edf3f5d1;padding:10px;font-family:PT Sans;margin-bottom:12px;">
+<a href="https://baltic-ohi.shinyapps.io/dashboard/">
+<img src="images/shiny-beta.png" style="float:right;width:28%;margin:0px 6px;">
+</a>
+<div style="width: 68%;">
+<p>
+<h4 style="font-weight: 500; display: inline;"> Baltic Health Index 2.0: </h4> 
+<br>
+<br>
+Results released with [Paper](https://doi.org/10.1002/pan3.10178) published in British Ecological Society journal _People and Nature_. Includes data from years 2009-2019 to assess the condition of the Sea in 2019.
+</p>
+</div>
+<div style="clear:both;"></div>
+</div>
+
+
+<div class="wrap page-lead-content" style="background-color:#edf3f5d1;padding:10px;font-family:PT Sans;margin-bottom:12px;">
+<img src="images/shiny-beta.png" style="float:right;width:28%;margin:0px 6px;">
+<div style="width: 68%;">
+<p>
+<h4 style="font-weight: 500; display: inline;"> Baltic Health Index 2.1: </h4> 
+<br>
+<br>
+An intermediate update, with goals updated including: Fisheries, Natural Products, Artisanal Fishing Opportunity, Economies, and Clean water subgoals (Eutrophication, Contaminants, Trash). Includes data from years 2010-2020 to assess the condition of the Sea in 2020.
+</p>
+</div>
+<div style="clear:both;"></div>
+</div>
+
+<br>
+
+<div class="wrap page-lead-content">
+<img style="background-color:#edf3f5b6;" align="right" src="images/src-su-logo.png" height="65px">
+<img style="background-color:#edf3f5b6;" align="left" src="images/original-logo-w-balticsea.png" height="65px">
+</div>

@@ -3,17 +3,18 @@ navbar:
   type: inverse
   title: "BALTIC HEALTH INDEX"
   left:
-    - text:  "Goals"
-      icon:  fas fa-tachometer-alt
-      href:  goals.html
-    - text:  "Data Layers"
-      icon:  fas fa-server
-      href:  layers.html
-    - text:  "FAQ"
-      icon:  fa-question-circle-o
+    - text:  "Assessments"
+      href:  shinyapps.html
+    - text:  "Blog"
+      href:  blog.html
+    - text:  "Team and Partners"
+      href:  team.html
+    - text:  "Frequent Questions"
       href:  faq.html
-    - text:  "GitHub"
-      icon:  fa-github
+  right:
+    - icon:  fa-twitter
+      href:  https://twitter.com/BalticHealthInd
+    - icon:  fa-github
       href:  https://github.com/OHI-Baltic
 output_dir:  "."
 output:

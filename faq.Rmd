@@ -1,12 +1,16 @@
 ---
-title: "Frequently Asked Questions"
 output:
   html_document:
-    toc: true
-    toc_float: true
+    toc: false
+    css: css/extra.css
 ---
 
----
+<h3 style="background-color:#09232fd1;color:#f3ffe1;line-height:60px;font-size:220%;padding-left:10px;">
+<!-- FREQUENTLY ASKED QUESTIONS -->
+Frequently Asked Questions
+</h3>
+
+<div class="wrap page-lead-content" style="background-color:#edf3f5a6;padding:10px;font-family:PT Sans;margin-bottom:12px;">
 
 <h3 style="font-weight:bold;font-size: 110%;"> 
 Why is this study being done in Baltic? 
@@ -88,4 +92,4 @@ Will there be future assessments?
 
 OHI assessments can be updated annually or on other management time frames with less effort than its initial development. This is because all analysis is done with open source collaborative software (R, RStudio, Git, GitHub) and can be updated with the most recent data. Baltic OHI assessments will continue as long as there is ongoing interest and support from ocean management agencies and stakeholders. 
 
----
+</div>
