@@ -6,9 +6,21 @@ output:
     css: css/extra.css
 ---
 
+<h3 style="background-color:#09232fd1;color:#f3ffe1;line-height:60px;font-size:220%;padding-left:10px;">
+Versions of the Index
+</h3>
+
+<div class="wrap page-lead-content" style="background-color:#edf3f5d1;padding:10px;font-family:PT Sans;margin-bottom:12px;">
+<p>
+The Baltic Health Index (BHI) is a measure of overall progress towards regional sustainability of coastal and marine systems. This website provides access to references, underlying data, and associated results and maps for the pilot study from 2019, and 2020 intermediate update of the Index. The dashboards and linked documents made available here provide in-depth details on the analytical framework, quantitative methodology, and data sources that underlie each version. Note that because of data and methodological improvements to subsequent versions of the Index, scores from different assessment versions cannot be combined and utilized in time-series analysis.
+</p>
+</div>
+
+<br>
+
 <div class="wrap page-lead-content" style="background-color:#edf3f5d1;padding:10px;font-family:PT Sans;margin-bottom:12px;">
 <a href="https://baltic-ohi.shinyapps.io/dashboard/">
-<img src="images/shiny-beta.png" style="float:right;width:28%;margin:0px 6px;">
+<img src="images/shiny-original.png" style="float:right;width:28%;margin:0px 6px;">
 </a>
 <div style="width: 68%;">
 <p>
@@ -33,11 +45,4 @@ An intermediate update, with goals updated including: Fisheries, Natural Product
 </p>
 </div>
 <div style="clear:both;"></div>
-</div>
-
-<br>
-
-<div class="wrap page-lead-content">
-<img style="background-color:#edf3f5b6;" align="right" src="images/src-su-logo.png" height="65px">
-<img style="background-color:#edf3f5b6;" align="left" src="images/original-logo-w-balticsea.png" height="65px">
 </div>

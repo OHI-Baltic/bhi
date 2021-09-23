@@ -11,7 +11,6 @@ output:
 
 <div class="wrap page-lead-content" style="background-color:#edf3f5d1;padding-left:10px;padding-right:10px;font-family:PT Sans;">
 <h4 style="color:#0a1821;line-height:50px;font-weight:400;">
-<!-- ABOUT THE PROJECT -->
 About the project
 </h4>
 
@@ -27,7 +26,6 @@ The Baltic Health Index formally started in 2015 and preliminary scores were com
 <!-- BHI Team -->
 
 <h3 style="background-color:#09232fd1;color:#f3ffe1;line-height:60px;font-size:220%;padding-left:10px;">
-<!-- THE CORE BHI TEAM -->
 The Core BHI Team
 </h3>
 

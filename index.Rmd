@@ -8,10 +8,11 @@ output:
 
 <!-- Welcome page title -->
 
-<div class="page-lead" style="background-image:url(images/banner-image.jpg)">
+<div class="page-lead" style="background-image:url(images/banner-image.jpg);padding-top:160px">
 <div class="wrap page-lead-content">
-<br><br>
-<h3 style="background-color:#0d4353d4;color:#f3ffe1;line-height:58px;font-size:220%;padding-left:200px;">  AN OCEAN HEALTH INDEX FOR THE BALTIC SEA </h3>
+<h3 style="background-color:#0d4353d4;color:#f3ffe1;line-height:58px;font-size:220%;padding-left:200px;">  
+AN OCEAN HEALTH INDEX FOR THE BALTIC SEA 
+</h3>
 </div>
 </div>
 
@@ -25,7 +26,6 @@ output:
 
 <div class="wrap page-lead-content" style="background-color:#edf3f5b6;padding-left:10px;padding-right:10px;font-family:PT Sans;">
 <h4 style="color:#0a1821;line-height:50px;font-weight:400;">
-<!-- THE OCEAN HEALTH INDEX (OHI) -->
 The Ocean Health Index (OHI)
 </h4>
 
@@ -40,7 +40,6 @@ The framework facilitates [transparent and repeatable assessments](https://www.n
 
 <div class="wrap page-lead-content" style="background-color:#edf3f5b6;padding-left:10px;padding-right:10px;font-family:PT Sans;">
 <h4 style="color:#0a1821;line-height:50px;font-weight:400;">
-<!-- QUANTIFYING STATUS OF THE BALTIC SEA -->
 Quantifying status of the Baltic Sea
 </h4>
 
@@ -51,13 +50,18 @@ In a first iteration, the BHI was adapted from previous OHI assessments [tailori
 <br> 
 </div>
 
-<br>
+<div class="page-lead" style="background-image:url(images/bhi-goals.jpg);padding-top:160px">
+<div class="wrap page-lead-content">
+<h3 style="background-color:#0d4353d4;color:#f3ffe1;line-height:40px;padding-left:200px;">  
+BALTIC HEALTH INDEX GOALS
+</h3>
+</div>
+</div>
 
 <!-- Assessment Regions -->
 
 <div class="wrap page-lead-content" style="background-color:#edf3f5b6;padding-left:10px;padding-right:10px;font-family:PT Sans;">
 <h4 style="color:#0a1821;line-height:50px;font-weight:400;">
-<!-- ASSESSMENT REGIONS  -->
 Assessment Regions
 </h4>
 
@@ -129,10 +133,3 @@ leaflet::leaflet(data = rgns, height = 600) %>%
   }")
 ```
 
-<br>
-
-<div class="wrap page-lead-content" style="background-color:#edf3f5b6;padding:10px;font-family:PT Sans;margin-bottom:12px;">
-<img align="right" src="images/src-su-logo.png" height="65px">
-<img align="left" src="images/original-logo-w-balticsea.png" height="65px"><div style="width: 74%;">
-</div>
-<div style="clear:both;"></div>
