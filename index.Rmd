@@ -6,130 +6,85 @@ output:
     css: css/extra.css
 ---
 
-<!-- Welcome page title -->
+<!-- <video autoplay muted loop id="myVideo"> -->
+<!-- <source src="images/waves-ruvim-miksanskiy-pexels.mp4" type="video/mp4"> -->
+<!-- </video> -->
 
-<div class="page-lead" style="background-image:url(images/banner-image.jpg);padding-top:160px">
+<!-- <video autoplay muted loop id="myVideo"> -->
+<!-- <source src="images/cliffs-rodnae-pexels.mp4" type="video/mp4"> -->
+<!-- </video> -->
+
+<video autoplay muted loop id="myVideo">
+<source src="images/sea-ad-urpina-pexels.mp4" type="video/mp4">
+</video>
+
+
+<!-- Welcome page title with banner image -->
+<div class="page-lead" style="background-image:url(images/banner-image-rocks.png);padding-top:270px">
 <div class="wrap page-lead-content">
-<h3 style="background-color:#0d4353d4;color:#f3ffe1;line-height:58px;font-size:220%;padding-left:200px;">  
+<!-- not using header class because want darker color overlapping image -->
+<h3 style="background-color:#557897d9;color:#e4f3fb;line-height:70px;font-size:220%;padding-left:20%;padding-right:20px">  
 AN OCEAN HEALTH INDEX FOR THE BALTIC SEA 
 </h3>
 </div>
 </div>
 
-<!-- <h3 style="background-color:#041c23d4;color:#f3ffe1;line-height:60px;font-size:220%;padding-left:180px;"> -->
-<!-- AN OCEAN HEALTH INDEX FOR THE BALTIC SEA -->
-<!-- </h3> -->
+<!-- Quote  -->
+<p style="font-weight:700;background-color:#5b637829;color:#1d3544;font-family:Roboto Slab;font-style:oblique;font-size:160%;padding-left:18%;padding-right:12%;text-align:center;">
+<br>
+"The holistic monitoring approach we need,
+<br>
+to navigate towards the future we want for our seas"
+<br>
+<br>
+</p>
 
 <br>
+<br>
+<br>
 
-<!-- About the Index -->
-
-<div class="wrap page-lead-content" style="background-color:#edf3f5b6;padding-left:10px;padding-right:10px;font-family:PT Sans;">
+<!-- About the Baltic Sea-->
+<div class="content">
 <h4 style="color:#0a1821;line-height:50px;font-weight:400;">
-The Ocean Health Index (OHI)
+A Sea in Distress
 </h4>
 
-The Ocean Health Index (OHI) measures and tracks the benefits and services that the ocean provides for people now and into the future. The OHI does this by measuring progress towards widely held goals that represent key benefits and services provided by marine ecosystems. By analyzing these goals together we obtain a comprehensive picture of the state of the ecosystem.
+The Baltic Sea is a unique, mostly-enclosed marine system, suffering multiple problems arising from human activities on and at the edge of the sea. It is one of the fastest warming marine ecosystems in the world, contaminated by hazardous chemicals and excessive nutrients, and troubled by ongoing habitat degradation and unsustainable fishing intensity. 
 
-The framework facilitates [transparent and repeatable assessments](https://www.nature.com/articles/s41559-017-0160) of ocean health over time, and can be integrated into ongoing policy initiatives to support sustainable ocean management.
+That the sea is surrounded by nine countries with differing priorities and agendas complicates coordination for remediation and sustainable management. There has been much effort and [attention in recent years](http://stateofthebalticsea.helcom.fi/) to better understand and tackle these issues, yet there is much still to be done. 
 
 <br> 
 </div>
 
 <!-- This Project -->
-
-<div class="wrap page-lead-content" style="background-color:#edf3f5b6;padding-left:10px;padding-right:10px;font-family:PT Sans;">
+<div class="content">
 <h4 style="color:#0a1821;line-height:50px;font-weight:400;">
 Quantifying status of the Baltic Sea
 </h4>
 
-The Baltic Health Index (BHI) is a regional study applying the OHI framework (known as OHI+). The aim is to provide an integrative and transparent tool to be used by decision-makers to guide management of the Baltic Sea towards increased sustainability.
+The BHI measures status and progress towards nine widely held goals that represent key benefits and services which marine systems provide to people now and into the future. By analyzing these goals together we obtain a comprehensive picture of the state of the sea. 
 
-In a first iteration, the BHI was adapted from previous OHI assessments [tailoring the OHI framework](https://peerj.com/articles/1503/) to represent the cultural, social, and ecological characteristics and priorities of Baltic using the best available information and knowledge. Subsequent iterations will further develop models specific to the Baltic Sea, and implement more automized routines for data collection and processing.
+The framework facilitates [transparent and repeatable assessments](https://www.nature.com/articles/s41559-017-0160) of ocean health over time, and can be integrated into ongoing policy initiatives to support sustainable ocean management. The aim is to provide an integrative and transparent tool to be used by decision-makers to guide management of the Baltic Sea towards increased sustainability.
 
-<br> 
-</div>
-
-<div class="page-lead" style="background-image:url(images/bhi-goals.jpg);padding-top:160px">
-<div class="wrap page-lead-content">
-<h3 style="background-color:#0d4353d4;color:#f3ffe1;line-height:40px;padding-left:200px;">  
-BALTIC HEALTH INDEX GOALS
-</h3>
-</div>
-</div>
-
-<!-- Assessment Regions -->
-
-<div class="wrap page-lead-content" style="background-color:#edf3f5b6;padding-left:10px;padding-right:10px;font-family:PT Sans;">
-<h4 style="color:#0a1821;line-height:50px;font-weight:400;">
-Assessment Regions
-</h4>
-
-Regions are the fundamental spatial units of analysis for the Ocean Health Index. Scores are calculated for each region individually and then combined (with an offshore area-weighted average) to produce scores for the entire Baltic Sea.  There are 42 BHI regions in the Baltic Sea, created by intersecting exclusive economnic zones (EEZs) with the Baltic Sea subbasins, and splitting the Finnish Archipelago Sea into it's own region according to WFD boundaries.
+In a first iteration, [the BHI was adapted](https://peerj.com/articles/1503/) tailoring the OHI framework to represent the cultural, social, and ecological characteristics and priorities of Baltic using the best available information and knowledge. Subsequent iterations will further develop models specific to the Baltic Sea, and implement more automized routines for data collection and processing.
 
 <br> 
 </div>
 
-```{r setup, echo = F, warning = FALSE, message = F}
-source("_site.R")
-## read spatial
-geojson <- file.path("regions_gcs_simple2x.geojson")
-rgns <- geojsonio::geojson_read(geojson, what = "sp")
-if("rgn_nam" %in% names(rgns@data) & !"rgn_name" %in% names(rgns@data)){
-  rgns@data = rgns@data %>% mutate(rgn_name = rgn_nam)
-}
-```
+<br> 
 
-```{r, out.width = '100%'}
-## create and render leaflet map
-leaflet::leaflet(data = rgns, height = 600) %>%
-  addProviderTiles(providers$Esri.OceanBasemap) %>%
-  setView(18, 60, zoom = 5) %>%
-  addPolygons(
-    layerId = ~rgn_id,
-    stroke = TRUE, opacity = 0.5, weight = 2, fillOpacity = 0.5, smoothFactor = 0.5,
-    color = ~colorNumeric("#6fa0b4", rgns$rgn_id)(rgn_id)) %>%
-  addPolygons(
-    layerId = ~rgn_id,
-    popup = paste("<h5><strong>", "Region:", "</strong>",
-                  rgns@data$rgn_nam,"</h5>",
-                  "<h5><strong>", "Region BHI ID:", "</strong>", rgns@data$rgn_id, "</h5>"),
-    fillOpacity = 0,
-    stroke = FALSE
-  ) %>% 
-  htmlwidgets::onRender("
-  function(el, t) {
-    var defaultStyle = {
-      // stroke, ie polygon border
-        opacity:     0.5,
-        weight:      2,
-      // fill, ie polygon interior
-        fillOpacity: 0.5,
-    };
-    var highlightStyle = {
-      // stroke, ie polygon border
-        opacity:     0.9,
-        weight:      6,
-      // fill, ie polygon interior
-        fillOpacity: 0.9,
-    };
-    var myMap = this;
-    var layers = myMap._layers;
-    for(var i in layers) {
-      var layer = layers[i];
-      if(layer.label) {
-        layer.on('mouseover',
-          function(e) {
-            this.setStyle(highlightStyle);
-            // this.bringToFront();
-        });
-        layer.on('mouseout',
-          function(e) {
-            this.setStyle(defaultStyle);
-            // this.bringToBack();
-        });
-      }
-    }
-  }")
-```
+<!-- Media frames: -->
+<!-- podcast, video of Ben on OHI, our intro to BHI video -->
+<iframe src="https://open.spotify.com/embed/episode/52grVGc6gBjR9vuWda8TGT?theme=0" width="100%" frameborder="0" allowtransparency="true" scrolling="no"></iframe>
 
+
+<div class="rgncontainer">
+<div class="rgnmap" style="background-color:#ffffff00;width:50%;height:290px;padding-right:3px;">
+<iframe src="https://www.youtube.com/embed/fv2o-Bq2ue0" width="100%" height="250" style="border-radius:10px;" frameborder="0" allow="accelerometer;autoplay;gyroscope;picture-in-picture"></iframe>
+
+</div>
+<div class="rgnmap" style="background-color:#ffffff00;width:50%;height:290px;padding-left:3px;">
+<iframe src="https://www.youtube.com/embed/3g6Xfq9FOrU" width="100%" height="250" style="border-radius:10px;" frameborder="0" allow="accelerometer;autoplay;gyroscope;picture-in-picture"></iframe>
+
+</div>
+</div>

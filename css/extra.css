@@ -1,29 +1,213 @@
 /*------------- Whole Document---------------- */
 
-@import url('https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700&display=swap');
+/* import the fonts we want to use from google */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300&family=Open+Sans+Condensed:wght@300&family=Raleway&family=Roboto+Slab:wght@200&display=swap');
+
+/* make main container larger */
+.main-container {
+    max-width: 79% !important;
+}
+
+/* formatting for section header */
+.header {
+    background-color: #4d89bd69;
+    color: #e4f3fb;
+    line-height: 70px;
+    font-size: 220%;
+    padding-left:20%;
+    padding-right:20px
+}
+
+/* formatting for text boxes */
+/* with partially transparent background */
+.content {
+  background-color: #edf3f5bf;
+  padding-left: 10px;
+  padding-right: 10px;
+  position: relative;
+  width: 100%;
+}
+
+/* including a background image */
+body {
+  background-image: url('https://images.unsplash.com/photo-1534143340226-6cbc7628dbe5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1064&q=80');
+  background-repeat: no-repeat;
+  /* fixed background image, sized based on size of screen */
+  background-attachment: fixed;
+  background-size: cover;
+  /* make background image transparent */
+  /* background-blend-mode: lighten; */
+  /* background-color: rgba(255,255,255,0.1); */
+  /* indent from edges of container */
+  margin: 10px 15px 10.5px;
+}
+
+/* Style the video: 100% width and height to cover the entire window */
+/* from https://www.w3schools.com/howto/howto_css_fullscreen_video.asp */
+#myVideo {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: -1;
+}
+
+
+/*------------- For text by map on Regions page ---------------- */
+/* originally made these for map page */
+/* but now also using on process and learn more pages */
+
+.rgncontainer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+.rgnmap {
+    width: 79%;
+    height: 580px;
+    top:0;
+}
+.rgntxt {
+    width: 20%;
+    height: 580px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color:#83adc594;
+    color:#feffff;
+    font-family: Lato;
+    position: relative;
+}
 
 /*------------- Navbar Formatting ---------------- */
 
 .navbar {
-    font-size: 18px;
-    min-height: 48px;
+    font-size: 20px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    box-sizing: border-box;
 }
 
+.container {
+    width: 99.5%;
+}
+
+/* make background color of navbar same color as in shiny app */
 .navbar-inverse {
-    background-color: #0a1721;
+    background-color: #83adc5;
+}
+/* make font family and background color for homepage same as in shiny app */
+.navbar-brand {
+    font-family: "Open Sans Condensed";
+    font-size: 21px;
+    background-color: #629ec1;
+}
+/* make font color purple and size larger */
+.navbar-inverse .navbar-brand {
+    color: #42435a;
+    font-size: 21px;
+}
+/* make background color purple on click */
+.navbar-inverse .navbar-nav>.open>a,
+.navbar-inverse .navbar-nav>.open>a:hover,
+.navbar-inverse .navbar-nav>.open>a:focus {
+    background-color: #547594;
+    color: #ffffff;
+}
+/* dropdown hover color */
+.navbar-default .navbar-nav>.open>a,
+.navbar-default .navbar-nav>.active>a,
+a.dropdown-toggle:hover {
+  background-color: #547594 !important;
+}
+/* dropdown menu color */
+.navbar-inverse .dropdown-menu>li>a,
+.navbar-inverse .dropdown-menu>li>a:focus {
+    color: #ffffff;
+    background-color:#0c1d1f;
+}
+/* dropdown menu hover color */
+.navbar-inverse .dropdown-menu>li>a:hover {
+    background-color: #050c0c !important;
+}
+/* navbar link when selected */
+.navbar-inverse .navbar-nav>.active>a,
+.navbar-inverse .navbar-nav>.active>a:hover,
+.navbar-inverse .navbar-nav>.active>a:focus {
+    color: #ffffff;
+    background-color: #629ec1;
+}
+
+/*------------- Flip Boxes for Learn More page ---------------- */
+/* Source: https://www.w3schools.com/howto/howto_css_flip_box.asp */
+
+/* The flip box container*/
+/* perspective gives the 3D effect. */
+.flip-box {
+  background-color: transparent;
+  width: 32.8%;
+  height: 33%;
+  perspective: 1000px;
+}
+
+/* container to position the front and back side */
+.flip-box-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 1s;
+  transform-style: preserve-3d;
+}
+
+/* horizontal flip when mouse over the flip box container */
+.flip-box:hover .flip-box-inner {
+  transform: rotateY(180deg);
+  /* hide image from front when flipped */
+  backface-visibility: hidden;
+}
+
+/* Position the front and back side */
+.flip-box-front, .flip-box-back {
+  position: absolute;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+}
+
+/* Style the back side */
+.flip-box-back {
+  background-color: #0c1a27bf;
+  color: grey;
+  transform: rotateY(180deg);
+  padding: 5%;
 }
 
 
-body {
-  /* add background image */
-  background-image: url('https://images.unsplash.com/photo-1534143340226-6cbc7628dbe5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1064&q=80');
-  background-repeat: no-repeat;
-  /* fixed background image */
-  background-attachment: fixed;
-  background-size: 100%;
-  /* make background image transparent */
-  background-blend-mode: lighten;
-  background-color: rgba(255,255,255,0.1);
-  /* color of font, and indent from edges of container */
-  margin: 10px 15px 10.5px;
+
+/*------------- Maybe use this for FAQ page? ---------------- */
+/* https://www.w3schools.com/css/css_dropdowns.asp */
+
+.faq-dropdown {
+  position: relative;
+  display: inline-block;
+  background-color: #edf3f5bfs;
+}
+
+.dropdown-content {
+  width: 100%;
+  display: none;
+  position: absolute;
+  background-color: #ffffff;
+  min-width: 160px;
+  box-shadow: 0px 3px 18px 0px rgb(0 0 0 / 40%);
+  padding-left: 10px;
+  padding-right: 10px;
+  z-index: 1;
+}
+
+.faq-dropdown:hover .dropdown-content {
+  display: block;
 }

@@ -6,13 +6,26 @@ output:
     css: css/extra.css
 ---
 
+<!-- <video autoplay muted loop id="myVideo"> -->
+<!-- <source src="images/waves-ruvim-miksanskiy-pexels.mp4" type="video/mp4"> -->
+<!-- </video> -->
+
+<!-- <video autoplay muted loop id="myVideo"> -->
+<!-- <source src="images/cliffs-rodnae-pexels.mp4" type="video/mp4"> -->
+<!-- </video> -->
+
+<video autoplay muted loop id="myVideo">
+<source src="images/sea-ad-urpina-pexels.mp4" type="video/mp4">
+</video>
+
 
 <!-- About the project -->
+<h3 class="header">  
+About the Project
+</h3>
 
 <div class="wrap page-lead-content" style="background-color:#edf3f5d1;padding-left:10px;padding-right:10px;font-family:PT Sans;">
-<h4 style="color:#0a1821;line-height:50px;font-weight:400;">
-About the project
-</h4>
+<br>
 
 The Baltic Health Index is a project jointly led by [Stockholm Resilience Centre (SRC)](https://www.stockholmresilience.org/), at Stockholm University, Sweden together with the [Ocean Health Index team](http://ohi-science.org/about/). The first phase has been funded by the Johansson Family foundation and the Baltic Ecosystem Adaptive Management, [BEAM](https://www.su.se/ostersjocentrum/english/beam), a five-year research programme (2010-2014). The second phase, started Jan 2019, is funded by the Johansson Family foundation. 
 
@@ -25,14 +38,17 @@ The Baltic Health Index formally started in 2015 and preliminary scores were com
 
 <!-- BHI Team -->
 
-<h3 style="background-color:#09232fd1;color:#f3ffe1;line-height:60px;font-size:220%;padding-left:10px;">
+<h3 class="header">  
 The Core BHI Team
 </h3>
 
+<!-- row with multiple bios -->
+<div class="content" style="background-color: #ffffff00;display:flex;justify-content:space-between;padding:0px;padding-bottom:10px;">
+
 <!-- Thorsten bio -->
-<div class="wrap page-lead-content" style="background-color:#edf3f5d1;padding:10px;font-family:PT Sans;margin-bottom:12px;">
-<img src="images/thorsten_blenckner.jpg" style="float:right;width:22%;margin:0px 6px;">
-<div style="width: 74%;">
+<div class="wrap page-lead-content" style="background-color:#e3ecf1b8;padding:10px;width:49.5%;">
+<img src="images/thorsten_blenckner.jpg" style="float:right;width:140px;margin:0px 6px;">
+<div style="width:76%;">
 <p>
 <h4 style="font-weight: 500; display: inline;"> Lead Scientist: </h4> 
 <h4 style="font-weight: 300; display: inline;"> Thorsten Blenckner </h4>
@@ -42,29 +58,37 @@ The Core BHI Team
 thorsten.blenckner@su.se
 </p>
 </div>
-<div style="clear:both;"></div>
+<div style="clear:both;">
+</div>
 </div>
 
 <!-- Ellie bio -->
-<div class="wrap page-lead-content" style="background-color:#edf3f5d1;padding:10px;font-family:PT Sans;margin-bottom:12px;">
-<img src="images/eleanore_campbell.jpg" style="float:right;width:22%;margin:0px 6px;" /><div style="width: 74%;">
+<div class="wrap page-lead-content" style="background-color:#e3ecf1b8;padding:10px;width:49.5%;">
+<img src="images/eleanore_campbell.jpg" style="float:right;width:140px;margin:0px 6px;">
+<div style="width:68%;">
 <p>
 <h4 style="font-weight: 500; display: inline;"> Data Analyst: </h4> 
-<h4 style="font-weight: 300; display: inline;"> Ellie Campbell </h4>
+<h4 style="font-weight: 300; display: inline;"> Eleanore Campbell </h4>
 <br>
-[Eleanore Campbell](https://www.stockholmresilience.org/contact-us/staff/2019-09-03-campbell.html) joined the team in January 2019 to begin work on the second BHI assessment. As a data analyst she helps tailor the Ocean Health Index (OHI) framework to the Baltic Sea, manage datasets behind the models, and support investigation of patterns or interactions.
+[Eleanore Campbell](https://www.stockholmresilience.org/contact-us/staff/2019-09-03-campbell.html) joined the team in 2019. As a data analyst she helps tailor the Ocean Health Index (OHI) framework to the Baltic Sea, manage data sets behind the models, and support investigation of patterns or interactions.
 
 eleanore.campbell@su.se
 </p>
 </div>
-<div style="clear:both;"></div>
+<div style="clear:both;">
+</div>
 </div>
 
-<!-- Andrea bio -->
+<!-- end row with multiple bios -->
+</div>
 
-<div class="wrap page-lead-content" style="background-color:#edf3f5d1;padding:10px;font-family:PT Sans;margin-bottom:12px;">
-<img src="images/andrea_de_cervo.png" style="float:right;width:22%;margin:0px 6px;" />
-<div style="width: 74%;">
+<!-- row with multiple bios -->
+<div class="content" style="background-color: #ffffff00;display:flex;justify-content:space-between;padding:0px;">
+
+<!-- Andrea bio -->
+<div class="wrap page-lead-content" style="background-color:#e3ecf1b8;padding:10px;width:49.5%;">
+<img src="images/andrea_de_cervo.png" style="float:right;width:140px;margin:0px 6px;">
+<div style="width:76%;">
 <p>
 <h4 style="font-weight: 500; display: inline;"> Project Manager: </h4> 
 <h4 style="font-weight: 300; display: inline;"> Andrea De Cervo </h4>
@@ -74,13 +98,14 @@ Andrea De Cervo joined the team for second BHI assessment.... As project manager
 andrea.decervo@su.se
 </p>
 </div>
-<div style="clear:both;"></div>
+<div style="clear:both;">
+</div>
 </div>
 
 <!-- Susa bio -->
-<div class="wrap page-lead-content" style="background-color:#edf3f5d1;padding:10px;font-family:PT Sans;margin-bottom:12px;">
-<img src="images/niiranen_susa.jpg" style="float:right;width:22%;margin:0px 6px;">
-<div style="width: 74%;">
+<div class="wrap page-lead-content" style="background-color:#e3ecf1b8;padding:10px;width:49.5%;">
+<img src="images/niiranen_susa.jpg" style="float:right;width:140px;margin:0px 6px;">
+<div style="width:76%;">
 <p>
 <h4 style="font-weight: 500; display: inline;"> Marine Food Webs/Dynamics Scientist: </h4> 
 
@@ -91,5 +116,41 @@ andrea.decervo@su.se
 susa.niiranen@su.se
 </p>
 </div>
+<div style="clear:both;">
+</div>
+</div>
+
+<!-- end row with multiple bios -->
+</div>
+
+
+<!-- Goalkeepers-->
+<h3 class="header">  
+Science Experts
+</h3>
+
+<!-- new bio... -->
+<div class="wrap page-lead-content" style="background-color:#edf3f5d1;padding:10px;font-family:PT Sans;margin-bottom:12px;">
+<img src="images/imagefile.png" style="float:right;width:140px;margin:0px 6px;">
+<div style="width: 74%;">
+<p>
+<h4 style="font-weight: 500; display: inline;"> Title here: </h4> 
+
+<h4 style="font-weight: 300; display: inline;"> First Last Names </h4>
+<br>
+[NAME](link to website/institution/etcc) role
+
+email_address@email
+</p>
+</div>
 <div style="clear:both;"></div>
 </div>
+
+
+<!-- Additional partners -->
+
+<h3 class="header">  
+Partner organizations
+</h3>
+
+<br>

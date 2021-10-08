@@ -1,0 +1,168 @@
+---
+output:
+  html_document:
+    fig_width: 1
+    toc: false
+    css: css/extra.css
+---
+
+<!-- <video autoplay muted loop id="myVideo"> -->
+<!-- <source src="images/waves-ruvim-miksanskiy-pexels.mp4" type="video/mp4"> -->
+<!-- </video> -->
+
+<!-- <video autoplay muted loop id="myVideo"> -->
+<!-- <source src="images/cliffs-rodnae-pexels.mp4" type="video/mp4"> -->
+<!-- </video> -->
+
+<video autoplay muted loop id="myVideo">
+<source src="images/sea-ad-urpina-pexels.mp4" type="video/mp4">
+</video>
+
+<h3 class="header">  
+Additional Resources
+</h3>
+
+<div class="rgncontainer">
+<div class="rgntxt" style="background-color:#ffffff00;padding-left:0px;padding-top:10px;padding-bottom:10px;">
+
+<div style="height:31%;background-color:#809ab594;padding:10px;">
+<p style="color: #3e546b87;font-size:35px;font-weight:900;font-family:'Open Sans Condensed';">
+MORE ABOUT THE BALTIC HEALTH INDEX
+</p>
+</div>
+<br>
+<div style="height:31%;background-color:#809ab594;padding:10px;">
+<p style="color: #3e546b87;font-size:35px;font-weight:900;font-family:'Open Sans Condensed';">
+MORE ABOUT THE OHI FRAMEWORK
+</p>
+</div>
+<br>
+<div style="height:31%;background-color:#809ab594;padding:10px;">
+<p style="color: #3e546b87;font-size:35px;font-weight:900;font-family:'Open Sans Condensed';">
+MORE ABOUT REGIONAL ASSESSMENTS
+</p>
+</div>
+<br>
+
+</div>
+
+<div class="rgnmap" style="background-color:#ffffff00;">
+
+<!-- Calculating the Baltic Health Index -->
+<!-- <h3 style="background-color:#09232fd1;color:#f3ffe1;line-height:40px;font-size:180%;padding-left:10px;"> -->
+<!-- Baltic Health Index Calculations -->
+<!-- </h3> -->
+
+<div class="flip-box" style="display:inline-block;padding:10px;">
+<div class="flip-box-inner" style="background-image:url(images/learnmore/tile-paper.png);">
+<div class="flip-box-front">
+<!-- <img src="images/learnmore/tile-paper.png" style="width=100%"> -->
+</div>
+<div class="flip-box-back">
+<h4><a href="https://doi.org/10.1002/pan3.10178">The Baltic Health Index (BHI): Assessing the social–ecological status of the Baltic Sea, Blenckner et al.</a></h4>
+</div>
+</div>
+</div>
+
+<div class="flip-box" style="display:inline-block;padding:10px;">
+<div class="flip-box-inner" style="background-image:url(images/learnmore/tile-bhi-github.png);">
+<div class="flip-box-front">
+<!-- <img src="images/learnmore/tile-bhi-github.png"> -->
+</div>
+<div class="flip-box-back">
+<h4><a href="https://github.com/OHI-Science/bhi">Baltic Health Index Score Calculations Repository </a></h4>
+</div>
+</div>
+</div>
+
+<div class="flip-box" style="display:inline-block;padding:10px;">
+<div class="flip-box-inner" style="background-image:url(images/learnmore/tile-bhiprep-github.png);">
+<div class="flip-box-front">
+<!-- <img src="images/learnmore/tile-bhiprep-github.png"> -->
+</div>
+<div class="flip-box-back">
+<h4><a href="https://github.com/OHI-Science/bhi-prep">Baltic Health Index Data Preparation Code Repository </a></h4>
+</div>
+</div>
+</div>
+
+<!-- About the Ocean Health Index -->
+<!-- <h3 style="background-color:#09232fd1;color:#f3ffe1;line-height:40px;font-size:180%;padding-left:10px;"> -->
+<!-- About the Ocean Health Index Framework -->
+<!-- </h3> -->
+
+<div class="flip-box" style="display:inline-block;padding:10px;">
+<div class="flip-box-inner" style="background-image:url(images/learnmore/tile-ohi-website.png);">
+<div class="flip-box-front">
+<!-- <img src="images/learnmore/tile-ohi-website.png"> -->
+</div>
+<div class="flip-box-back">
+<h4><a href="http://www.oceanhealthindex.org/">Ocean Health Index Website </a></h4>
+</div>
+</div>
+</div>
+
+<div class="flip-box" style="display:inline-block;padding:10px;">
+<div class="flip-box-inner" style="background-image:url(images/learnmore/tile-ohi-decade.png);">
+<div class="flip-box-front">
+<!-- <img src="images/learnmore/tile-ohi-decade.png"> -->
+</div>
+<div class="flip-box-back">
+<h4><a href="https://www.cell.com/one-earth/fulltext/S2590-3322(19)30270-2">NCEAS director Ben Halpern reflects on a Decade of the Ocean Health Index </a></h4>
+</div>
+</div>
+</div>
+
+<div class="flip-box" style="display:inline-block;padding:10px;">
+<div class="flip-box-inner" style="background-image:url(images/learnmore/tile-ohiscience.png);">
+<div class="flip-box-front">
+<!-- <img src="images/learnmore/tile-ohiscience.png"> -->
+</div>
+<div class="flip-box-back">
+<h4><a href="https://ohi-science.org/">The Ocean Health Index, Science Website </a></h4>
+</div>
+</div>
+</div>
+
+<!-- OHI Other Regional Assessents -->
+<!-- <h3 style="background-color:#09232fd1;color:#f3ffe1;line-height:40px;font-size:180%;padding-left:10px;"> -->
+<!-- About the Ocean Health Index Framework -->
+<!-- </h3> -->
+
+<div class="flip-box" style="display:inline-block;padding:10px;">
+<div class="flip-box-inner" style="background-image:url(images/learnmore/tile-ohi-plus.png);">
+<div class="flip-box-front">
+<!-- <img src="images/learnmore/tile-ohi-plus.png"> -->
+</div>
+<div class="flip-box-back">
+<h4><a href="https://ohi-science.org/projects/ohi-assessments/">OHI Regional Assessments, Around the Globe </a></h4>
+</div>
+</div>
+</div>
+
+<div class="flip-box" style="display:inline-block;padding:10px;">
+<div class="flip-box-inner" style="background-image:url(images/learnmore/tile-sw-england.png);">
+<div class="flip-box-front">
+<!-- <img src="images/learnmore/tile-sw-england.png"> -->
+</div>
+<div class="flip-box-back">
+<h4><a href="https://www.ohi.sustainable-seas.org/">An Ocean Health Index+ for South West England </a></h4>
+</div>
+</div>
+</div>
+
+<div class="flip-box" style="display:inline-block;padding:10px;">
+<div class="flip-box-inner" style="background-image:url(images/learnmore/tile-ohi-northeast.png);">
+<div class="flip-box-front">
+<!-- <img src="images/learnmore/tile-ohi-northeast.png"> -->
+</div>
+<div class="flip-box-back">
+<h4><a href="https://ohi-northeast.shinyapps.io/ne-dashboard/">Shiny Dashboard for the OHI Northeast, USA </a></h4>
+</div>
+</div>
+</div>
+
+<br>
+
+</div>
+</div>

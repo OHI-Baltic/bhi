@@ -3,14 +3,56 @@ navbar:
   type: inverse
   title: "BALTIC HEALTH INDEX"
   left:
-    - text:  "Assessments"
-      href:  shinyapps.html
-    - text:  "Blog"
-      href:  blog.html
-    - text:  "Team and Partners"
-      href:  team.html
-    - text:  "Frequent Questions"
-      href:  faq.html
+    - text:  "Assessment"
+      menu:
+      - text: "Which areas do we study?"
+        href:  regions.html
+      - text: "What is the process?"
+        href:  process.html
+      - text: "How is the index put together?"
+        href:  components.html
+      - text: "What have we learned?"
+        href: shinyapps.html
+    - text:  "Goals"
+      menu:
+      - text: "Artisanal fishing opportunities"
+        href:  artisanal_fishing_opportunities.html
+      - text: "Biodiversity"
+        href: biodiversity.html
+      - text: "Carbon storage"
+        href: carbon_storage.html
+      - text: "Clean water: Contaminants"
+        href:  contaminants.html
+      - text: "Clean water: Eutrophication"
+        href: eutrophication.html
+      - text: "Clean water: Trash"
+        href: trash.html
+      - text: "Economies & Livelihoods: Economies"
+        href:  economies.html
+      - text: "Economies & Livelihoods: Livelihoods"
+        href:  livelihoods.html
+      - text: "Food provision: Wildcaught fisheries"
+        href:  fisheries.html
+      - text: "Food provision: Mariculture"
+        href: mariculture.html
+      - text: "Natural products"
+        href:  natural_products.html
+      - text: "Sense of place: Iconic species"
+        href: iconic_species.html
+      - text: "Sense of place: Lasting special places"
+        href:  lasting_special_places.html
+      - text: "Tourism"
+        href: tourism.html
+    - text:  "Learn More"
+      menu:
+      - text:  "Who are we?"
+        href:  team.html
+      - text: "Common questions"
+        href:  faq.html
+      - text: "What else should I read?"
+        href: learnmore.html
+      - text:  "BHI blog"
+        href:  blog.html
   right:
     - icon:  fa-twitter
       href:  https://twitter.com/BalticHealthInd

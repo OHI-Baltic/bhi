@@ -1,0 +1,28 @@
+---
+output:
+  html_document:
+    fig_width: 1
+    toc: false
+    css: css/extra.css
+---
+
+<!-- <video autoplay muted loop id="myVideo"> -->
+<!-- <source src="images/waves-ruvim-miksanskiy-pexels.mp4" type="video/mp4"> -->
+<!-- </video> -->
+
+<!-- <video autoplay muted loop id="myVideo"> -->
+<!-- <source src="images/cliffs-rodnae-pexels.mp4" type="video/mp4"> -->
+<!-- </video> -->
+
+<video autoplay muted loop id="myVideo">
+<source src="images/sea-ad-urpina-pexels.mp4" type="video/mp4">
+</video>
+
+<!-- EUT goal page title with banner image -->
+<div class="page-lead" style="background-image:url(images/goals/jeremy-bishop-unsplash-cw.jpg);padding-top:270px">
+<div class="wrap page-lead-content">
+<h3 class="header"> 
+Clean water: Eutrophication
+</h3>
+</div>
+</div>

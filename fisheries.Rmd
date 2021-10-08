@@ -1,0 +1,28 @@
+---
+output:
+  html_document:
+    fig_width: 1
+    toc: false
+    css: css/extra.css
+---
+
+<!-- <video autoplay muted loop id="myVideo"> -->
+<!-- <source src="images/waves-ruvim-miksanskiy-pexels.mp4" type="video/mp4"> -->
+<!-- </video> -->
+
+<!-- <video autoplay muted loop id="myVideo"> -->
+<!-- <source src="images/cliffs-rodnae-pexels.mp4" type="video/mp4"> -->
+<!-- </video> -->
+
+<video autoplay muted loop id="myVideo">
+<source src="images/sea-ad-urpina-pexels.mp4" type="video/mp4">
+</video>
+
+<!-- ECO goal page title with banner image -->
+<div class="page-lead" style="background-image:url(images/goals/zbysiu-rodak-unsplash-fp.jpg);padding-top:270px">
+<div class="wrap page-lead-content">
+<h3 class="header"> 
+Food provision: Wildcaught fisheries
+</h3>
+</div>
+</div>

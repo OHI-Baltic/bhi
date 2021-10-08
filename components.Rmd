@@ -1,0 +1,43 @@
+---
+output:
+  html_document:
+    fig_width: 1
+    toc: false
+    css: css/extra.css
+---
+
+<video autoplay muted loop id="myVideo">
+<source src="images/sea-ad-urpina-pexels.mp4" type="video/mp4">
+</video>
+
+<h3 style="background-color:#09232fd1;color:#f3ffe1;line-height:60px;font-size:220%;padding-left:10px;">
+Dimensions of the Index
+</h3>
+
+<div class="content">
+<h4 style="color:#0a1821;line-height:50px;font-weight:400;">
+Pressures
+</h4>
+
+PPLACEHOLDER TEXT [Regions are the fundamental spatial units of analysis for the Ocean Health Index. Scores are calculated for each region individually and then combined (with an offshore area-weighted average) to produce scores for the entire Baltic Sea.  There are 42 BHI regions in the Baltic Sea, created by intersecting exclusive economnic zones (EEZs) with the Baltic Sea subbasins, and splitting the Finnish Archipelago Sea into it's own region according to WFD boundaries.]
+
+<br> 
+</div>
+
+<div class="page-lead" style="background-image:url(images/bhi-goals.jpg);padding-top:200px">
+<div class="wrap page-lead-content">
+<h3 style="background-color:#0d4353d4;color:#f3ffe1;line-height:40px;padding-left:200px;">  
+BALTIC HEALTH INDEX GOALS
+</h3>
+</div>
+</div>
+
+<div class="content">
+<h4 style="color:#0a1821;line-height:50px;font-weight:400;">
+Goals
+</h4>
+
+PPLACEHOLDER TEXT [Regions are the fundamental spatial units of analysis for the Ocean Health Index. Scores are calculated for each region individually and then combined (with an offshore area-weighted average) to produce scores for the entire Baltic Sea.  There are 42 BHI regions in the Baltic Sea, created by intersecting exclusive economnic zones (EEZs) with the Baltic Sea subbasins, and splitting the Finnish Archipelago Sea into it's own region according to WFD boundaries.]
+
+<br> 
+</div>
