@@ -5,7 +5,7 @@
 
 /* make main container larger */
 .main-container {
-    max-width: 79% !important;
+    max-width: 78.75% !important;
 }
 
 /* formatting for section header */
@@ -54,7 +54,7 @@ body {
 }
 
 
-/*------------- For text by map on Regions page ---------------- */
+/*------------- For Regions page ---------------- */
 /* originally made these for map page */
 /* but now also using on process and learn more pages */
 
@@ -77,6 +77,20 @@ body {
     color:#feffff;
     font-family: Lato;
     position: relative;
+}
+
+.leaflet-popup-content-wrapper {
+    background: #fbfcfde6;
+    box-shadow: 0 12px 6px rgb(69 75 99 / 68%);
+}
+
+.leaflet-popup-content {
+    margin: 8px 15px;
+}
+
+h5 {
+    font-size: 18px;
+    font-family: 'Open Sans Condensed';
 }
 
 /*------------- Navbar Formatting ---------------- */

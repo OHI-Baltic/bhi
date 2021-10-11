@@ -27,72 +27,142 @@ Assessment Regions
 
 ```{r setup, echo = F, warning = FALSE, message = F}
 source("_site.R")
-## read spatial
-geojson <- file.path("regions_gcs_simple2x.geojson")
-rgns <- geojsonio::geojson_read(geojson, what = "sp")
-if("rgn_nam" %in% names(rgns@data) & !"rgn_name" %in% names(rgns@data)){
-  rgns@data = rgns@data %>% mutate(rgn_name = rgn_nam)
-}
+
+## making regions from BHI 3 spatial files ----
+
+# rgn %>%
+#   mutate(country = case_when(
+#     nuts_id == "FI" ~ "Finland",
+#     nuts_id == "SE" ~ "Sweden",
+#     nuts_id == "DE" ~ "Germany",
+#     nuts_id == "DK" ~ "Denmark",
+#     nuts_id == "EE" ~ "Estonia",
+#     nuts_id == "LT" ~ "Lithuania",
+#     nuts_id == "LV" ~ "Latvia",
+#     nuts_id == "PL" ~ "Poland",
+#     nuts_id == "RU" ~ "Russia"
+#   )) %>%
+#   rmapshaper::ms_simplify() %>%
+#   rmapshaper::ms_simplify() %>%
+#   st_transform(crs = st_crs(4326)) %>%
+#   st_write("regions_gcs_simple2x.geojson")
+
+# subbasins %>% 
+#   rmapshaper::ms_simplify() %>%
+#   rmapshaper::ms_simplify() %>%
+#   st_transform(crs = st_crs(4326)) %>%
+#   st_write("subbasins_gcs_simple2x.geojson")
+
+# rgn_buffer %>%
+#   mutate(country = case_when(
+#     nuts_id == "FI" ~ "Finland",
+#     nuts_id == "SE" ~ "Sweden",
+#     nuts_id == "DE" ~ "Germany",
+#     nuts_id == "DK" ~ "Denmark",
+#     nuts_id == "EE" ~ "Estonia",
+#     nuts_id == "LT" ~ "Lithuania",
+#     nuts_id == "LV" ~ "Latvia",
+#     nuts_id == "PL" ~ "Poland",
+#     nuts_id == "RU" ~ "Russia"
+#   )) %>%
+#   rmapshaper::ms_simplify() %>%
+#   rmapshaper::ms_simplify() %>%
+#   rename(buff_id = bhi_id) %>%
+#   st_transform(crs = st_crs(4326)) %>%
+#   st_write("regions_buffer_gcs_simple2x.geojson")
+
+
+## reading in spatial files for website map ----
+
+rgn_geojson <- file.path("regions_gcs_simple2x.geojson")
+rgns <- geojsonio::geojson_read(rgn_geojson, what = "sp")
+
+sbn_geojson <- file.path("subbasins_gcs_simple2x.geojson")
+subbsn <- geojsonio::geojson_read(sbn_geojson, what = "sp")
+
+rgn_buff_geojson <- file.path("regions_buffer_gcs_simple2x.geojson")
+rgn_buff <- geojsonio::geojson_read(rgn_buff_geojson, what = "sp")
 ```
 
 ```{r, out.width = '100%'}
-## create and render leaflet map
-leaflet::leaflet(data = rgns, height = 580) %>%
+leaflet::leaflet(height = 580) %>%
   addProviderTiles(providers$Esri.OceanBasemap) %>%
   setView(17.3, 60.2, zoom = 5) %>%
+  
+  ## polygons: Regions, Subbasins, EEZs, in-land 25km Buffer zone ----
   addPolygons(
-    layerId = ~rgn_id,
-    stroke = TRUE, opacity = 0.5, weight = 2, fillOpacity = 0.5, smoothFactor = 0.5,
-    color = ~colorNumeric("#6fa0b4", rgns$rgn_id)(rgn_id)) %>%
+    data = rgns,
+    group = "BHI Regions",
+    stroke = TRUE, opacity = 0.5, weight = 1.5, fillOpacity = 0.4, smoothFactor = 0.5,
+    color = "#4d89bd"
+  ) %>%
   addPolygons(
-    layerId = ~rgn_id,
-    popup = paste("<h5><strong>", "Region:", "</strong>",
-                  rgns@data$rgn_nam,"</h5>",
-                  "<h5><strong>", "Region BHI ID:", "</strong>", rgns@data$rgn_id, "</h5>"),
+    data = subbsn,
+    group = "Subbasins (as used by HOLAS)",
+    stroke = TRUE, opacity = 0.5, weight = 1.5, fillOpacity = 0.4, smoothFactor = 0.5,
+    color = "#4d89bd"
+  ) %>%
+  addPolygons(
+    data = rgn_buff,
+    group = "25km Inland Buffer of BHI Regions",
+    stroke = TRUE, opacity = 0.6, weight = 1, fillOpacity = 0.5, smoothFactor = 0.5,
+    color = "#9e2a2a"
+  ) %>%
+  
+  ## polygon pop-ups ----
+  addPolygons(
+    data = rgns,
+    group = "BHI Regions",
+    popup = paste(
+      "<h5><strong>", "Name:", "</strong>",
+      rgns@data$subbasin, " - ", rgns@data$country, "</h5>",
+      "<h5><strong>", "ID:", "</strong>", rgns@data$bhi_id, "</h5>"
+    ),
+    fillOpacity = 0,
+    stroke = FALSE,
+    popupOptions = popupOptions(style = list("color" = "red", "font-family" = "serif"))
+  ) %>%
+  addPolygons(
+    data = subbsn,
+    group = "Subbasins (as used by HOLAS)",
+    popup = paste(
+      "<h5><strong>", "Subbasin:", "</strong>",
+      subbsn@data$subbasin, "</h5>",
+      "<h5><strong>", "ID:", "</strong>", subbsn@data$sbsn_id, "</h5>"
+    ),
+    fillOpacity = 0,
+    stroke = FALSE
+  ) %>%
+  addPolygons(
+    data = rgn_buff,
+    group = "25km Inland Buffer of BHI Regions",
+    popup = paste(
+      "<h5><strong>", "Name:", "</strong>",
+      rgn_buff@data$subbasin, " - ", rgn_buff@data$country, "</h5>",
+      "<h5><strong>", "ID:", "</strong>", rgn_buff@data$buff_id, "</h5>"
+    ),
     fillOpacity = 0,
     stroke = FALSE
   ) %>% 
-  htmlwidgets::onRender("
-  function(el, t) {
-    var defaultStyle = {
-      // stroke, ie polygon border
-        opacity:     0.5,
-        weight:      2,
-      // fill, ie polygon interior
-        fillOpacity: 0.5,
-    };
-    var highlightStyle = {
-      // stroke, ie polygon border
-        opacity:     0.9,
-        weight:      6,
-      // fill, ie polygon interior
-        fillOpacity: 0.9,
-    };
-    var myMap = this;
-    var layers = myMap._layers;
-    for(var i in layers) {
-      var layer = layers[i];
-      if(layer.label) {
-        layer.on('mouseover',
-          function(e) {
-            this.setStyle(highlightStyle);
-            // this.bringToFront();
-        });
-        layer.on('mouseout',
-          function(e) {
-            this.setStyle(defaultStyle);
-            // this.bringToBack();
-        });
-      }
-    }
-  }")
+  
+  ## layers control ----
+  addLayersControl(
+    overlayGroups = c(
+      "BHI Regions",
+      "Subbasins (as used by HOLAS)", 
+      "25km Inland Buffer of BHI Regions"
+    ),
+    position = "bottomright",
+    options = layersControlOptions(collapsed = TRUE)
+  ) %>% 
+  hideGroup(c("Subbasins (as used by HOLAS)", "25km Inland Buffer of BHI Regions"))
 ```
 
 </div>
 <div class="rgntxt">
 <br>
 <br>
-Regions are the fundamental spatial units of analysis for the Ocean Health Index. 
+Regions are the fundamental spatial units of analysis for the Baltic Health Index. 
 <br>
 <br>
 Scores are calculated for each region individually and then combined (with an offshore area-weighted average) to produce scores for the entire Baltic Sea.
