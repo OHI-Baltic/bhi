@@ -38,6 +38,6 @@ Before beginning: 1) read about the OHI framework to confirm it is the right too
 Once the assessment begins, there are three phases: data exploration, modelling, and communication of results. Each involves a dynamic exchange between stakeholders and analysts as the team balances comprehensiveness and feasibility. This exchange is an opportunity identify critical knowledge/data gaps or other limitations. 
 <br>
 <br>
-For more details refer to the <a href="OHI onboarding" style="color:#126994">OHI onboarding</a> manual by the OHI team.
+For more details refer to the <a href="http://ohi-science.org/onboarding/" style="color:#126994">OHI onboarding</a> manual by the OHI team.
 </div>
 </div>

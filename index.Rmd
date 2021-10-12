@@ -51,7 +51,7 @@ A Sea in Distress
 
 The Baltic Sea is a unique, mostly-enclosed marine system, suffering multiple problems arising from human activities on and at the edge of the sea. It is one of the fastest warming marine ecosystems in the world, contaminated by hazardous chemicals and excessive nutrients, and troubled by ongoing habitat degradation and unsustainable fishing intensity. 
 
-That the sea is surrounded by nine countries with differing priorities and agendas complicates coordination for remediation and sustainable management. There has been much effort and [attention in recent years](http://stateofthebalticsea.helcom.fi/) to better understand and tackle these issues, yet there is much still to be done. 
+That the sea is surrounded by nine countries with differing priorities and agendas complicates coordination for remediation and sustainable management. There has been much effort and [attention in the recent decade](http://stateofthebalticsea.helcom.fi/) to better understand and tackle these issues, yet there is much still to be done. 
 
 <br> 
 </div>
@@ -64,9 +64,11 @@ Quantifying status of the Baltic Sea
 
 The BHI measures status and progress towards nine widely held goals that represent key benefits and services which marine systems provide to people now and into the future. By analyzing these goals together we obtain a comprehensive picture of the state of the sea. 
 
-The framework facilitates [transparent and repeatable assessments](https://www.nature.com/articles/s41559-017-0160) of ocean health over time, and can be integrated into ongoing policy initiatives to support sustainable ocean management. The aim is to provide an integrative and transparent tool to be used by decision-makers to guide management of the Baltic Sea towards increased sustainability.
+The framework facilitates [transparent and repeatable assessments](https://www.nature.com/articles/s41559-017-0160) of ocean health over time, and can be integrated into ongoing policy initiatives to support sustainable ocean management. In line with the UN [Ocean Decade aim](https://en.unesco.org/ocean-decade/about) to 'reverse the cycle of decline in ocean health and create improved conditions for sustainable development of the oceans, seas and coasts,' the aim of the BHI is to provide an integrative and transparent tool to be used by decision-makers to guide management of the Baltic Sea towards increased sustainability.
 
 In a first iteration, [the BHI was adapted](https://peerj.com/articles/1503/) tailoring the OHI framework to represent the cultural, social, and ecological characteristics and priorities of Baltic using the best available information and knowledge. Subsequent iterations will further develop models specific to the Baltic Sea, and implement more automized routines for data collection and processing.
+
+To learn more, we welcome you to explore this website, and read [our paper](https://doi.org/10.1002/pan3.10178).
 
 <br> 
 </div>
