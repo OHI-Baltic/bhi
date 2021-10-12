@@ -193,30 +193,3 @@ a.dropdown-toggle:hover {
   transform: rotateY(180deg);
   padding: 5%;
 }
-
-
-
-/*------------- Maybe use this for FAQ page? ---------------- */
-/* https://www.w3schools.com/css/css_dropdowns.asp */
-
-.faq-dropdown {
-  position: relative;
-  display: inline-block;
-  background-color: #edf3f5bfs;
-}
-
-.dropdown-content {
-  width: 100%;
-  display: none;
-  position: absolute;
-  background-color: #ffffff;
-  min-width: 160px;
-  box-shadow: 0px 3px 18px 0px rgb(0 0 0 / 40%);
-  padding-left: 10px;
-  padding-right: 10px;
-  z-index: 1;
-}
-
-.faq-dropdown:hover .dropdown-content {
-  display: block;
-}
