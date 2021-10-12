@@ -21,8 +21,44 @@ output:
 <!-- MAR goal page title with banner image -->
 <div class="page-lead" style="background-image:url(images/goals/zbysiu-rodak-unsplash-fp.jpg);padding-top:270px">
 <div class="wrap page-lead-content">
-<h3 class="header"> 
-Food provision: Mariculture
+<h3 class="header" style="background-color:#487ca9a8">  
+FOOD PROVISION: MARICULTURE
 </h3>
 </div>
 </div>
+
+<br>
+<br>
+
+<!-- goal philosophy -->
+<div class="content">
+<h4 style="color:#051729;line-height:50px;font-weight:600;">
+RAISING SEAFOOD SUSTAINABLY
+</h4>
+
+<h5 style="font-size:23px">
+This subgoal measures the ability to obtain maximal seafood yield from farm-raised facilities without damaging the ocean's ability to continue providing fish for people in the future.
+</h5>
+
+<h5>
+The European Commission’s Blue Growth Agenda identifies aquaculture as one of the most promising sectors in terms of economic growth and job potential.
+</h5>
+
+<br>
+</div>
+
+
+<!-- goal infographics -->
+
+
+<!-- some text about the goal -->
+
+<!-- <div class="content"> -->
+<!-- <h4 style="color:#051729;line-height:50px;font-weight:600;"> -->
+<!-- WHAT DOES THIS SCORE MEAN? -->
+<!-- </h4> -->
+
+
+
+<!-- <br> -->
+<!-- </div> -->

@@ -6,14 +6,6 @@ output:
     css: css/extra.css
 ---
 
----
-output:
-  html_document:
-    fig_width: 1
-    toc: false
-    css: css/extra.css
----
-
 <!-- <video autoplay muted loop id="myVideo"> -->
 <!-- <source src="images/waves-ruvim-miksanskiy-pexels.mp4" type="video/mp4"> -->
 <!-- </video> -->
@@ -29,8 +21,102 @@ output:
 <!-- LSP goal page title with banner image -->
 <div class="page-lead" style="background-image:url(images/goals/stian-vesterinen-unsplash-sp.jpg);padding-top:270px">
 <div class="wrap page-lead-content">
-<h3 class="header"> 
-Sense of place: Lasting special places
+<h3 class="header" style="background-color:#487ca9a8">  
+SENSE OF PLACE: LASTING SPECIAL PLACES
 </h3>
 </div>
+</div>
+
+<br>
+<br>
+
+<!-- goal philosophy -->
+<div class="content">
+<h4 style="color:#051729;line-height:50px;font-weight:600;">
+PROTECTING SPECIAL PLACES
+</h4>
+
+<h5 style="font-size:23px">
+This sub-goal focuses on those geographic locations that hold particular value for biological, aesthetic, ecosystem service or cultural reasons, and assesses how well they are protected.
+</h5>
+
+<h5>
+Protected places symbolize the cultural, spiritual, aesthetic and other intangible benefits that people value in the Baltic Sea.
+</h5>
+
+<br>
+</div>
+
+
+<!-- goal infographics -->
+
+```{r include = FALSE, include = FALSE}
+knitr::opts_chunk$set(fig.width = 11) 
+
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+scores <- read_csv("https://raw.githubusercontent.com/OHI-Baltic/bhi/master/index/scorelist.csv") %>% 
+  filter(region_id == "BHI-000", year == 2020) %>% 
+  select(dimension, goal, score)
+```
+
+
+<div class="rgncontainer">
+<div class="rgnmap" style="background-color:#f2f4f5f7;width:49.5%;height:100%;padding:10px;">
+```{r, echo = FALSE}
+ggplot(filter(scores, goal == "LSP", dimension == "score")) +
+  geom_rect(aes(xmin = 0, xmax = 100, ymin = 0, ymax = 100), fill = "#dbe4eb") +
+  geom_rect(aes(xmin = 0, xmax = score, ymin = 0, ymax = score), fill = "#629ec1", color = NA) +
+  geom_text(aes(x = score/2, y = score/2, label = round(score)), size = 65, color = "#f9fafb", family = "Impact") +
+  theme_void() 
+```
+<br>
+<br>
+<p style="text-align:center">
+The overall Baltic score average for Lasting Special Places
+<br>
+is 58 out of 100. 
+</p>
+
+</div>
+
+<div class="rgnmap" style="background-color:#f2f4f5f7;width:49.5%;height:100%;padding:10px;">
+```{r, echo = FALSE}
+scores %>% 
+  filter(goal == "LSP", dimension %in% c("future", "score")) %>% 
+  tidyr::pivot_wider(names_from = "dimension",  values_from = "score") %>% 
+  mutate(score_diff = (future-score)/score*100) %>% 
+  mutate(score_diff = paste(ifelse(score_diff > 0, "+", ""), round(score_diff),  "%")) %>% 
+  ggplot() +
+  geom_rect(aes(xmin = 0, xmax = 100, ymin = 0, ymax = 100), fill = "#bcd1dfb3", color = NA) +
+  scale_x_continuous(limits = c(0, 100)) +
+  scale_y_continuous(limits = c(0, 100)) +
+  geom_text(aes(x = 50, y = 50, label = score_diff), size = 55, color = "#629ec1", family = "Impact") +
+  theme_void()
+```
+<br>
+<br>
+<p style="text-align:center">
+It is estimated that in the near future the score for Lasting Special Places subgoal will improve roughly +7%
+</p>
+
+</div>
+</div>
+
+<!-- some text about the goal -->
+
+<div class="content">
+<h4 style="color:#051729;line-height:50px;font-weight:600;">
+WHAT DOES THIS SCORE MEAN?
+</h4>
+
+This sub-goal assesses the area of marine protected areas (MPAs) and their management status, i.e. “designated”, “partly managed” and “managed” in the Baltic sea area.
+
+A high score indicates that the areal coverage of MPAs is high and with a full implemented management plan.
+
+Mapping important conservation, social and cultural places, that people value highly, is essential for representing this subgoal in the Baltic sea.
+
+<br>
 </div>

@@ -18,11 +18,105 @@ output:
 <source src="images/sea-ad-urpina-pexels.mp4" type="video/mp4">
 </video>
 
-<!-- ECO goal page title with banner image -->
+<!-- FIS goal page title with banner image -->
 <div class="page-lead" style="background-image:url(images/goals/zbysiu-rodak-unsplash-fp.jpg);padding-top:270px">
 <div class="wrap page-lead-content">
-<h3 class="header"> 
-Food provision: Wildcaught fisheries
+<h3 class="header" style="background-color:#487ca9a8">  
+FOOD PROVISION: WILDCAUGHT FISHERIES
 </h3>
 </div>
+</div>
+
+<br>
+<br>
+
+<!-- goal philosophy -->
+<div class="content">
+<h4 style="color:#051729;line-height:50px;font-weight:600;">
+HARVESTING WILD-CAUGHT SEAFOOD SUSTAINABLY
+</h4>
+
+<h5 style="font-size:23px">
+This sub-goal describes the ability to maximize the sustainable yield of wild-caught seafood for human consumption.
+</h5>
+
+<h5>
+Many seafoods have been a minor part of the diet in many Baltic Sea countries so far and current consumption is limited to a few fish species that are predominantly imported.
+</h5>
+
+<br>
+</div>
+
+
+<!-- goal infographics -->
+
+```{r include = FALSE, include = FALSE}
+knitr::opts_chunk$set(fig.width = 11) 
+
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+scores <- read_csv("https://raw.githubusercontent.com/OHI-Baltic/bhi/master/index/scorelist.csv") %>% 
+  filter(region_id == "BHI-000", year == 2020) %>% 
+  select(dimension, goal, score)
+```
+
+
+<div class="rgncontainer">
+<div class="rgnmap" style="background-color:#f2f4f5f7;width:49.5%;height:100%;padding:10px;">
+```{r, echo = FALSE}
+ggplot(filter(scores, goal == "FIS", dimension == "score")) +
+  geom_rect(aes(xmin = 0, xmax = 100, ymin = 0, ymax = 100), fill = "#dbe4eb") +
+  geom_rect(aes(xmin = 0, xmax = score, ymin = 0, ymax = score), fill = "#629ec1", color = NA) +
+  geom_text(aes(x = score/2, y = score/2, label = round(score)), size = 45, color = "#f9fafb", family = "Impact") +
+  theme_void() 
+```
+<br>
+<br>
+<p style="text-align:center">
+The overall Baltic score average for the Fisheries subgoal 
+<br>
+is 39 out of 100. 
+</p>
+
+</div>
+
+<div class="rgnmap" style="background-color:#f2f4f5f7;width:49.5%;height:100%;padding:10px;">
+```{r, echo = FALSE}
+scores %>% 
+  filter(goal == "FIS", dimension %in% c("future", "score")) %>% 
+  tidyr::pivot_wider(names_from = "dimension",  values_from = "score") %>% 
+  mutate(score_diff = (future-score)/score*100) %>% 
+  mutate(score_diff = paste(ifelse(score_diff > 0, "+", ""), round(score_diff),  "%")) %>% 
+  ggplot() +
+  geom_rect(aes(xmin = 0, xmax = 100, ymin = 0, ymax = 100), fill = "#bcd1dfb3", color = NA) +
+  scale_x_continuous(limits = c(0, 100)) +
+  scale_y_continuous(limits = c(0, 100)) +
+  geom_text(aes(x = 50, y = 50, label = score_diff), size = 65, color = "#629ec1", family = "Impact") +
+  theme_void()
+```
+<br>
+<br>
+<p style="text-align:center">
+It is estimated that in the near future the score for the Fisheries subgoal will improve roughly 21%.
+</p>
+
+</div>
+</div>
+
+<!-- some text about the goal -->
+
+<div class="content">
+<h4 style="color:#051729;line-height:50px;font-weight:600;">
+WHAT DOES THIS SCORE MEAN?
+</h4>
+
+Data used for this subgoal are based on the two most important commercial important fish species that are used as a food source: cod and herring.
+
+A high score indicates that the highest theoretical equilibrium yield being continuously taken on average from a stock is under existing average environmental conditions without significantly affecting the reproduction process.
+
+Developing an approach that better reflects economic aspects of food provisioning by the Baltic fisheries is ideal.
+
+<br>
 </div>

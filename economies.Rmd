@@ -21,8 +21,102 @@ output:
 <!-- ECO goal page title with banner image -->
 <div class="page-lead" style="background-image:url(images/goals/jens-johnsson-unsplash-le.jpg);padding-top:270px">
 <div class="wrap page-lead-content">
-<h3 class="header"> 
-Economies & Livelihoods: Economies
+<h3 class="header" style="background-color:#487ca9a8">  
+ECONOMIES & LIVELIHOODS: ECONOMIES
 </h3>
 </div>
+</div>
+
+<br>
+<br>
+
+<!-- goal philosophy -->
+<div class="content">
+<h4 style="color:#051729;line-height:50px;font-weight:600;">
+THRIVING COASTAL ECONOMIES IN THE BALTIC SEA
+</h4>
+
+<h5 style="font-size:23px">
+This subgoal captures the economic value associated with marine industries.
+</h5>
+
+<h5>
+The Baltic Sea region is the backdrop to a large range of marine activities from shipping to fishing, aquaculture, recreational use and beyond.
+</h5>
+
+<br>
+</div>
+
+
+<!-- goal infographics -->
+
+```{r include = FALSE, include = FALSE}
+knitr::opts_chunk$set(fig.width = 11) 
+
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+scores <- read_csv("https://raw.githubusercontent.com/OHI-Baltic/bhi/master/index/scorelist.csv") %>% 
+  filter(region_id == "BHI-000", year == 2020) %>% 
+  select(dimension, goal, score)
+```
+
+
+<div class="rgncontainer">
+<div class="rgnmap" style="background-color:#f2f4f5f7;width:49.5%;height:100%;padding:10px;">
+```{r, echo = FALSE}
+ggplot(filter(scores, goal == "ECO", dimension == "score")) +
+  geom_rect(aes(xmin = 0, xmax = 100, ymin = 0, ymax = 100), fill = "#dbe4eb") +
+  geom_rect(aes(xmin = 0, xmax = score, ymin = 0, ymax = score), fill = "#629ec1", color = NA) +
+  geom_text(aes(x = score/2, y = score/2, label = round(score)), size = 65, color = "#f9fafb", family = "Impact") +
+  theme_void() 
+```
+<br>
+<br>
+<p style="text-align:center">
+The overall Baltic score average for the Economies subgoal 
+<br>
+is 80 out of 100. 
+</p>
+
+</div>
+
+<div class="rgnmap" style="background-color:#f2f4f5f7;width:49.5%;height:100%;padding:10px;">
+```{r, echo = FALSE}
+scores %>% 
+  filter(goal == "ECO", dimension %in% c("future", "score")) %>% 
+  tidyr::pivot_wider(names_from = "dimension",  values_from = "score") %>% 
+  mutate(score_diff = (future-score)/score*100) %>% 
+  mutate(score_diff = paste(ifelse(score_diff > 0, "+", ""), round(score_diff),  "%")) %>% 
+  ggplot() +
+  geom_rect(aes(xmin = 0, xmax = 100, ymin = 0, ymax = 100), fill = "#bcd1dfb3", color = NA) +
+  scale_x_continuous(limits = c(0, 100)) +
+  scale_y_continuous(limits = c(0, 100)) +
+  geom_text(aes(x = 50, y = 50, label = score_diff), size = 65, color = "#629ec1", family = "Impact") +
+  theme_void()
+```
+<br>
+<br>
+<p style="text-align:center">
+It is estimated that in the near future the score for the Economies subgoal will improve roughly +4%.
+</p>
+
+</div>
+</div>
+
+<!-- some text about the goal -->
+
+<div class="content">
+<h4 style="color:#051729;line-height:50px;font-weight:600;">
+WHAT DOES THIS SCORE MEAN?
+</h4>
+
+This goal is composed of a single component: revenue (Gross Value Added) and is used to measure the output or contribution of a particular sector.
+
+A high score indicates that all marine economic sectors achieve the average annual growth rate target of 1.5%.
+
+Extractive economic activities measured in this goal could be included in the index as minor pressures on other goals, in which case the contraction of these sectors would potentially correspond to increases in scores of other goals such as biodiversity or sense of place.
+
+<br>
 </div>
