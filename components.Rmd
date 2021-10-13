@@ -6,27 +6,29 @@ output:
     css: css/extra.css
 ---
 
+<!-- <video autoplay muted loop id="myVideo"> -->
+<!-- <source src="images/waves-ruvim-miksanskiy-pexels.mp4" type="video/mp4"> -->
+<!-- </video> -->
+
+<!-- <video autoplay muted loop id="myVideo"> -->
+<!-- <source src="images/cliffs-rodnae-pexels.mp4" type="video/mp4"> -->
+<!-- </video> -->
+
 <video autoplay muted loop id="myVideo">
 <source src="images/sea-ad-urpina-pexels.mp4" type="video/mp4">
 </video>
 
-<h3 style="background-color:#09232fd1;color:#f3ffe1;line-height:60px;font-size:220%;padding-left:10px;">
-Dimensions of the Index
+
+<!-- BHI Goals -->
+<h3 class="header" style="background-color:#2e659461">  
+Nine Key Benefits of Marine Systems
 </h3>
 
-<div class="content">
-<h4 style="color:#0a1821;line-height:50px;font-weight:400;">
-Pressures
-</h4>
-
-PPLACEHOLDER TEXT [Regions are the fundamental spatial units of analysis for the Ocean Health Index. Scores are calculated for each region individually and then combined (with an offshore area-weighted average) to produce scores for the entire Baltic Sea.  There are 42 BHI regions in the Baltic Sea, created by intersecting exclusive economnic zones (EEZs) with the Baltic Sea subbasins, and splitting the Finnish Archipelago Sea into it's own region according to WFD boundaries.]
-
-<br> 
-</div>
-
-<div class="page-lead" style="background-image:url(images/bhi-goals.jpg);padding-top:200px">
+<!-- goals banner image -->
+<div class="page-lead" style="background-image:url(images/bhi-goals.jpg);padding-top:175px">
 <div class="wrap page-lead-content">
-<h3 style="background-color:#0d4353d4;color:#f3ffe1;line-height:40px;padding-left:200px;">  
+<!-- not using header class because want darker color overlapping image -->
+<h3 style="background-color:#83adc5b8;color:#e4f3fb;line-height:30px;font-size:150%;padding-left:10%;padding-right:20px">
 BALTIC HEALTH INDEX GOALS
 </h3>
 </div>
@@ -37,7 +39,65 @@ BALTIC HEALTH INDEX GOALS
 Goals
 </h4>
 
-PPLACEHOLDER TEXT [Regions are the fundamental spatial units of analysis for the Ocean Health Index. Scores are calculated for each region individually and then combined (with an offshore area-weighted average) to produce scores for the entire Baltic Sea.  There are 42 BHI regions in the Baltic Sea, created by intersecting exclusive economnic zones (EEZs) with the Baltic Sea subbasins, and splitting the Finnish Archipelago Sea into it's own region according to WFD boundaries.]
+The BHI measures status and progress towards nine widely held goals that represent key benefits and services which marine systems provide to people now and into the future. By analyzing these goals together we obtain a comprehensive picture of the state of the sea. 
 
-<br> 
+Each goal measures the delivery of benefits with respect to a sustainable target. Scores under 100 indicate failure to reach the 'acceptable' levels decided upon by the relevant governing bodies, and science experts.
+
+<br>
+</div>
+
+
+<!-- Dimensions of the Index -->
+<h3 class="header" style="background-color:#2e659461">  
+Composition of the Index
+</h3>
+
+<div class="content">
+<h4 style="color:#0a1821;line-height:50px;font-weight:400;">
+Dimensions
+</h4>
+
+Multiple data layers are used to calculate each goal's 4 dimensions: status, trend, pressures, and resilience. Some data layers &mdash; particularly pressure and resilience layers &mdash; are used in more than one goal. A goal's score is a combination of its dimensions, and a region's overall BHI score is a combination of all goal scores from the region.
+
+
+To improve understanding of the likely near-term future condition, resilience and pressure dimensions are included. The likely future condition suggested (not predicted!) by short-term trends will become more or less optimistic depending on the counterbalance of pressure versus resilience.
+
+<br>
+</div>
+
+```{r, echo = FALSE, fig.width = 12, fig.height = 1.2, out.width = '100%'}
+library(ggplot2)
+
+df <- data.frame(
+  dimension = c("status", "likely future composed of 3 dimensions:", "trend", "pressures", "resilience"), 
+  xstart = c(0, 0.5, 0.5, 0.5 + 0.335, 0.5 + 0.335 + 0.0825),
+  xstop = c(0.5, 1, 0.5 + 0.335, 0.5 + 0.335 + 0.0825, 1),
+  row = c(2, 2, 1, 1, 1)
+)
+df$dimension <- factor(
+  df$dimension, 
+  levels = c("status", "likely future composed of 3 dimensions:", "trend", "pressures", "resilience")
+)
+
+ggplot(df) +
+  geom_rect(aes(xmin = xstart, xmax = xstop, ymin = row - 1, ymax = row, fill = dimension), show.legend = FALSE) +
+  scale_fill_manual(values = c("#6b889f", "#e8d59b", "#83adc5", "#ee886e", "#427d78")) +
+  geom_text(aes(x = (xstop + xstart)/2, y = row - 0.5, label = dimension), size = 4.5, color = "#f9fafb", family = "Impact") +
+  theme_void() +
+  theme(
+    panel.background = element_rect(fill = "#bbd3e869", color = NA),
+    plot.margin = unit(c(0,-0.04,0,-0.04), "null")
+  )
+```
+
+<div class="content">
+<h4 style="color:#0a1821;line-height:50px;font-weight:400;">
+Pressures & Resilience
+</h4>
+
+Pressures are ecological and social activities or characteristics that negatively affect scores for a goal. The Baltic Sea is impacted by multiple pressures including excessive nutrients, elevated levels of hazardous substances, introduction of non-native species and habitat degradation as well as unsustainable fishing pressure.
+
+Resilience comprises measures with potential to increase status by reducing or eliminating pressures. Its three components are: ecological integrity (biodiversity), goal-specific regulations, and social integrity (political stability, anti-corruption).
+
+<br>
 </div>

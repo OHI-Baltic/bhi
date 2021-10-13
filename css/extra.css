@@ -26,6 +26,7 @@
   padding-right: 10px;
   position: relative;
   width: 100%;
+  font-family: 'Roboto Slab';
 }
 
 /* including a background image */
@@ -62,6 +63,7 @@ body {
     width: 79%;
     height: 580px;
     top:0;
+    font-family: 'Roboto Slab';
 }
 .rgntxt {
     width: 20%;
@@ -70,7 +72,7 @@ body {
     padding-right: 10px;
     background-color:#83adc594;
     color:#feffff;
-    font-family: Lato;
+    font-family: 'Roboto Slab';
     position: relative;
 }
 

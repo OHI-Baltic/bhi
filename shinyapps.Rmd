@@ -6,55 +6,67 @@ output:
     css: css/extra.css
 ---
 
-<video autoplay muted loop id="myVideo">
-<source src="images/waves-ruvim-miksanskiy-pexels.mp4" type="video/mp4">
-</video>
+<!-- <video autoplay muted loop id="myVideo"> -->
+<!-- <source src="images/waves-ruvim-miksanskiy-pexels.mp4" type="video/mp4"> -->
+<!-- </video> -->
 
 <!-- <video autoplay muted loop id="myVideo"> -->
 <!-- <source src="images/cliffs-rodnae-pexels.mp4" type="video/mp4"> -->
 <!-- </video> -->
 
-<!-- <video autoplay muted loop id="myVideo"> -->
-<!-- <source src="images/sea-ad-urpina-pexels.mp4" type="video/mp4"> -->
-<!-- </video> -->
+<video autoplay muted loop id="myVideo">
+<source src="images/sea-ad-urpina-pexels.mp4" type="video/mp4">
+</video>
 
 
-<h3 style="background-color:#09232fd1;color:#f3ffe1;line-height:60px;font-size:220%;padding-left:10px;">
-Versions of the Index
+<!-- Data, methodology, results -->
+<h3 class="header" style="padding-left:10px;background-color:#3b73a27d;">  
+Data & Results
 </h3>
 
-<div class="wrap page-lead-content" style="background-color:#edf3f5d1;padding:10px;font-family:PT Sans;margin-bottom:12px;">
+<div class="content" style="padding:10px">
 <p>
-The Baltic Health Index (BHI) is a measure of overall progress towards regional sustainability of coastal and marine systems. This website provides access to references, underlying data, and associated results and maps for the pilot study from 2019, and 2020 intermediate update of the Index. The dashboards and linked documents made available here provide in-depth details on the analytical framework, quantitative methodology, and data sources that underlie each version. Note that because of data and methodological improvements to subsequent versions of the Index, scores from different assessment versions cannot be combined and utilized in time-series analysis.
+While this website provides an overview of the BHI process and framework, the two dashboards linked below provide information specific to different 'versions' of the Index. These [dashboards built with shiny](https://shiny.rstudio.com/) provide in-depth details on quantitative methodology, underlying data, and associated results. 
+
+The [Baltic Health Index | Dashboard]() contains the most recent version of the Index, incorporating ongoing improvements to methodology and underlying data with successive assessments. The [Archived Dashboard | 2020 Paper Supplement]() is maintained as the supplement to our [paper](https://doi.org/10.1002/pan3.10178).
+
+Note that because of changes, scores from different versions cannot be combined and utilized in time-series analysis.
+
 </p>
 </div>
 
 <br>
 
-<div class="wrap page-lead-content" style="background-color:#edf3f5d1;padding:10px;font-family:PT Sans;margin-bottom:12px;">
-<a href="https://baltic-ohi.shinyapps.io/dashboard/">
-<img src="images/shiny-original.png" style="float:right;width:28%;margin:0px 6px;">
-</a>
+<div class="content" style="padding:10px;margin-bottom:5px;">
+<img src="images/shiny-beta.png" style="float:right;width:28%;margin:0px 6px;">
 <div style="width: 68%;">
 <p>
-<h4 style="font-weight: 500; display: inline;"> Baltic Health Index 2.0: </h4> 
+<h4 style="font-weight: 500; display: inline;">
+Baltic Health Index | Dashboard (Under Construction!)
+</h4> 
 <br>
-<br>
-Results released with [Paper](https://doi.org/10.1002/pan3.10178) published in British Ecological Society journal _People and Nature_. Includes data from years 2009-2019 to assess the condition of the Sea in 2019.
+The most recent version of the Index, incorporating ongoing improvements to methodology and underlying data with successive assessments. Current edition includes data from years 2009-2021 to assess the condition of the Sea for years 2018-2020. Last updated: Date Updated. 
+
+[View the Current BHI Dashboard]()
 </p>
 </div>
 <div style="clear:both;"></div>
 </div>
 
 
-<div class="wrap page-lead-content" style="background-color:#edf3f5d1;padding:10px;font-family:PT Sans;margin-bottom:12px;">
-<img src="images/shiny-beta.png" style="float:right;width:28%;margin:0px 6px;">
+<div class="content" style="padding:10px;">
+<a href="https://baltic-ohi.shinyapps.io/dashboard/">
+<img src="images/shiny-original.png" style="float:right;width:28%;margin:0px 6px;">
+</a>
 <div style="width: 68%;">
 <p>
-<h4 style="font-weight: 500; display: inline;"> Baltic Health Index 2.1: </h4> 
+<h4 style="font-weight: 500; display: inline;">
+Archived Dashboard | 2020 Paper Supplement
+</h4> 
 <br>
-<br>
-An intermediate update, with goals updated including: Fisheries, Natural Products, Artisanal Fishing Opportunity, Economies, and Clean water subgoals (Eutrophication, Contaminants, Trash). Includes data from years 2010-2020 to assess the condition of the Sea in 2020.
+Results released with [our paper](https://doi.org/10.1002/pan3.10178) published in British Ecological Society journal _People and Nature_. Includes data from years 2009-2019 to assess the condition of the Sea in 2019.
+
+[View the Archived Dashboard](https://baltic-ohi.shinyapps.io/dashboard/)
 </p>
 </div>
 <div style="clear:both;"></div>
