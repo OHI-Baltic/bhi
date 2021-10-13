@@ -25,8 +25,9 @@ Assessment Regions
 <div class="rgncontainer">
 <div class="rgnmap">
 
-```{r setup, echo = F, warning = FALSE, message = F}
-source("_site.R")
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
+library(dplyr)
+library(leaflet)
 
 ## making regions from BHI 3 spatial files ----
 
@@ -84,7 +85,7 @@ rgn_buff_geojson <- file.path("regions_buffer_gcs_simple2x.geojson")
 rgn_buff <- geojsonio::geojson_read(rgn_buff_geojson, what = "sp")
 ```
 
-```{r, out.width = '100%'}
+```{r, echo = FALSE, out.width = '100%'}
 leaflet::leaflet(height = 580) %>%
   addProviderTiles(providers$Esri.OceanBasemap) %>%
   setView(17.3, 60.2, zoom = 5) %>%

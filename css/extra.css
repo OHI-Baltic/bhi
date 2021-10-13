@@ -191,7 +191,7 @@ a.dropdown-toggle:hover {
 /* Style the back side */
 .flip-box-back {
   background-color: #0c1a27bf;
-  color: grey;
+  color: #cbccce;
   transform: rotateY(180deg);
   padding: 5%;
 }

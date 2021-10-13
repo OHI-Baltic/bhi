@@ -49,117 +49,153 @@ MORE ABOUT REGIONAL ASSESSMENTS
 <div class="rgnmap" style="background-color:#ffffff00;">
 
 <!-- Calculating the Baltic Health Index -->
-<!-- <h3 style="background-color:#09232fd1;color:#f3ffe1;line-height:40px;font-size:180%;padding-left:10px;"> -->
-<!-- Baltic Health Index Calculations -->
-<!-- </h3> -->
 
 <div class="flip-box" style="display:inline-block;padding:10px;">
+<a href="https://doi.org/10.1002/pan3.10178">
 <div class="flip-box-inner" style="background-image:url(images/learnmore/tile-paper.png);">
 <div class="flip-box-front">
-<!-- <img src="images/learnmore/tile-paper.png" style="width=100%"> -->
 </div>
 <div class="flip-box-back">
-<h4><a href="https://doi.org/10.1002/pan3.10178">The Baltic Health Index (BHI): Assessing the social–ecological status of the Baltic Sea, Blenckner et al.</a></h4>
+<h4 style="font-size:95%">
+The Baltic Health Index (BHI): Assessing the social–ecological status of the Baltic Sea, Blenckner et al.
+
+This paper explains in detail how we tailored the index to the Baltic Sea context
+</h4>
 </div>
 </div>
+</a>
 </div>
 
 <div class="flip-box" style="display:inline-block;padding:10px;">
+<a href="https://github.com/OHI-Science/bhi">
 <div class="flip-box-inner" style="background-image:url(images/learnmore/tile-bhi-github.png);">
 <div class="flip-box-front">
-<!-- <img src="images/learnmore/tile-bhi-github.png"> -->
 </div>
 <div class="flip-box-back">
-<h4><a href="https://github.com/OHI-Science/bhi">Baltic Health Index Score Calculations Repository </a></h4>
+<h4 style="font-size:95%">
+Baltic Health Index Score Calculations Repository 
+
+This is the GitHub repository containing the code used to calculate the Index from the underlying data
+</h4>
 </div>
 </div>
+</a>
 </div>
 
 <div class="flip-box" style="display:inline-block;padding:10px;">
+<a href="https://github.com/OHI-Science/bhi-prep">
 <div class="flip-box-inner" style="background-image:url(images/learnmore/tile-bhiprep-github.png);">
 <div class="flip-box-front">
-<!-- <img src="images/learnmore/tile-bhiprep-github.png"> -->
 </div>
 <div class="flip-box-back">
-<h4><a href="https://github.com/OHI-Science/bhi-prep">Baltic Health Index Data Preparation Code Repository </a></h4>
+<h4 style="font-size:95%">
+Baltic Health Index Data Preparation Code Repository
+
+This is the GitHub repository containing the code used to collect and pre-process datasets which feed into the Index goal models
+</h4>
 </div>
 </div>
+</a>
 </div>
 
 <!-- About the Ocean Health Index -->
-<!-- <h3 style="background-color:#09232fd1;color:#f3ffe1;line-height:40px;font-size:180%;padding-left:10px;"> -->
-<!-- About the Ocean Health Index Framework -->
-<!-- </h3> -->
 
 <div class="flip-box" style="display:inline-block;padding:10px;">
+<a href="http://www.oceanhealthindex.org/">
 <div class="flip-box-inner" style="background-image:url(images/learnmore/tile-ohi-website.png);">
 <div class="flip-box-front">
-<!-- <img src="images/learnmore/tile-ohi-website.png"> -->
 </div>
 <div class="flip-box-back">
-<h4><a href="http://www.oceanhealthindex.org/">Ocean Health Index Website </a></h4>
+<h4 style="font-size:95%">
+Ocean Health Index Website
+
+Overview website oceanhealthindex.org which explains the Framework and Approach
+</h4>
 </div>
 </div>
+</a>
 </div>
 
 <div class="flip-box" style="display:inline-block;padding:10px;">
+<a href="https://www.cell.com/one-earth/fulltext/S2590-3322(19)30270-2">
 <div class="flip-box-inner" style="background-image:url(images/learnmore/tile-ohi-decade.png);">
 <div class="flip-box-front">
-<!-- <img src="images/learnmore/tile-ohi-decade.png"> -->
 </div>
 <div class="flip-box-back">
-<h4><a href="https://www.cell.com/one-earth/fulltext/S2590-3322(19)30270-2">NCEAS director Ben Halpern reflects on a Decade of the Ocean Health Index </a></h4>
+<h4 style="font-size:95%">
+NCEAS director Ben Halpern reflects on a Decade of the Ocean Health Index
+
+This paper 'Building on a Decade of the Ocean Health Index' is a collection of reflections on challenges and opportunities for the framework
+</h4>
 </div>
 </div>
+</a>
 </div>
 
 <div class="flip-box" style="display:inline-block;padding:10px;">
+<a href="https://ohi-science.org/">
 <div class="flip-box-inner" style="background-image:url(images/learnmore/tile-ohiscience.png);">
 <div class="flip-box-front">
-<!-- <img src="images/learnmore/tile-ohiscience.png"> -->
 </div>
 <div class="flip-box-back">
-<h4><a href="https://ohi-science.org/">The Ocean Health Index, Science Website </a></h4>
+<h4 style="font-size:95%">
+Science Website of the The Ocean Health Index
+
+This site contains more on the technical details of the framework, and training materials to support independent regional assessments
+</h4>
 </div>
 </div>
+</a>
 </div>
 
 <!-- OHI Other Regional Assessents -->
-<!-- <h3 style="background-color:#09232fd1;color:#f3ffe1;line-height:40px;font-size:180%;padding-left:10px;"> -->
-<!-- About the Ocean Health Index Framework -->
-<!-- </h3> -->
 
 <div class="flip-box" style="display:inline-block;padding:10px;">
+<a href="https://ohi-science.org/projects/ohi-assessments/">
 <div class="flip-box-inner" style="background-image:url(images/learnmore/tile-ohi-plus.png);">
 <div class="flip-box-front">
-<!-- <img src="images/learnmore/tile-ohi-plus.png"> -->
 </div>
 <div class="flip-box-back">
-<h4><a href="https://ohi-science.org/projects/ohi-assessments/">OHI Regional Assessments, Around the Globe </a></h4>
+<h4 style="font-size:95%">
+Regional Assessments from around the Globe 
+
+This page from the OHI science website presents a map and list of current and completed independent regional assessments
+</h4>
 </div>
 </div>
+</a>
 </div>
 
 <div class="flip-box" style="display:inline-block;padding:10px;">
+<a href="https://www.ohi.sustainable-seas.org/">
 <div class="flip-box-inner" style="background-image:url(images/learnmore/tile-sw-england.png);">
 <div class="flip-box-front">
-<!-- <img src="images/learnmore/tile-sw-england.png"> -->
 </div>
 <div class="flip-box-back">
-<h4><a href="https://www.ohi.sustainable-seas.org/">An Ocean Health Index+ for South West England </a></h4>
+<h4 style="font-size:95%">
+An Ocean Health Index+ for South West England
+
+This is the website for the regional assessment which applied the OHI framework to six geographic regions in South West England
+</h4>
 </div>
 </div>
+</a>
 </div>
 
 <div class="flip-box" style="display:inline-block;padding:10px;">
+<a href="https://ohi-northeast.shinyapps.io/ne-dashboard/">
 <div class="flip-box-inner" style="background-image:url(images/learnmore/tile-ohi-northeast.png);">
 <div class="flip-box-front">
-<!-- <img src="images/learnmore/tile-ohi-northeast.png"> -->
 </div>
 <div class="flip-box-back">
-<h4><a href="https://ohi-northeast.shinyapps.io/ne-dashboard/">Shiny Dashboard for the OHI Northeast, USA </a></h4>
+<h4 style="font-size:95%">
+Shiny Dashboard for the OHI Northeast, USA 
+
+This shiny dashboard presents the data, results, and methods from the regional assessment for the Northeast, USA
+</h4>
 </div>
 </div>
+</a>
 </div>
 
 <br>

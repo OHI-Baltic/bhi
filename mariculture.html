@@ -396,51 +396,6 @@ The European Commission’s Blue Growth Agenda identifies aquaculture as one of 
 <p><br></p>
 </div>
 <!-- goal infographics -->
-<!-- ```{r include = FALSE, include = FALSE} -->
-<!-- knitr::opts_chunk$set(fig.width = 11)  -->
-<!-- library(ggplot2) -->
-<!-- library(dplyr) -->
-<!-- library(readr) -->
-<!-- scores <- read_csv("https://raw.githubusercontent.com/OHI-Baltic/bhi/master/index/scorelist.csv") %>%  -->
-<!--   filter(region_id == "BHI-000", year == 2020) %>%  -->
-<!--   select(dimension, goal, score) -->
-<!-- ``` -->
-<!-- <div class="rgncontainer"> -->
-<!-- <div class="rgnmap" style="background-color:#f2f4f5f7;width:49.5%;height:340px;padding:10px;"> -->
-<!-- ```{r, echo = FALSE} -->
-<!-- ggplot(filter(scores, goal == "MAR", dimension == "score")) + -->
-<!--   geom_rect(aes(xmin = 0, xmax = 100, ymin = 0, ymax = 100), fill = "#bcd1dfb3") + -->
-<!--   geom_rect(aes(xmin = 0, xmax = score, ymin = 0, ymax = score), fill = "#07233c", color = NA) + -->
-<!--   geom_text(aes(x = score/2, y = score/2, label = round(score)), size = 45, color = "white") + -->
-<!--   theme_void()  -->
-<!-- ``` -->
-<!-- <br> -->
-<!-- <br> -->
-<!-- <p> -->
-<!-- The overall Baltic score average for the Mariculture goal is -->
-<!-- </p> -->
-<!-- </div> -->
-<!-- <div class="rgnmap" style="background-color:#f2f4f5f7;width:49.5%;height:340px;padding:10px;"> -->
-<!-- ```{r, echo = FALSE} -->
-<!-- scores %>%  -->
-<!--   filter(goal == "MAR", dimension %in% c("future", "score")) %>%  -->
-<!--   tidyr::pivot_wider(names_from = "dimension",  values_from = "score") %>%  -->
-<!--   mutate(score_diff = future-score) %>%  -->
-<!--   mutate(score_diff = paste(ifelse(score_diff > 0, "+", ""), round(score_diff),  "%")) %>%  -->
-<!--   ggplot() + -->
-<!--   geom_rect(aes(xmin = 0, xmax = 100, ymin = 0, ymax = 100), fill = "#bcd1dfb3", color = NA) + -->
-<!--   scale_x_continuous(limits = c(0, 100)) + -->
-<!--   scale_y_continuous(limits = c(0, 100)) + -->
-<!--   geom_text(aes(x = 50, y = 50, label = score_diff), size = 60, color = "#07233c") + -->
-<!--   theme_void() -->
-<!-- ``` -->
-<!-- <br> -->
-<!-- <br> -->
-<!-- <p> -->
-<!-- It is estimated that in the near future the score for the Mariculture goal will  -->
-<!-- </p> -->
-<!-- </div> -->
-<!-- </div> -->
 <!-- some text about the goal -->
 <!-- <div class="content"> -->
 <!-- <h4 style="color:#051729;line-height:50px;font-weight:600;"> -->
